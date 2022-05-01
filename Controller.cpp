@@ -6,7 +6,7 @@
 void Controller::update() {
 
     double distance = calculateDistanceError() * Pk_distance;
-    int distanceCommand = MathUtils::constrain(distance, 0, 100);
+    int distanceCommand = MathUtils::constrain(distance, 0.0f, 100.0f);
 
     double angleError = calculateAngleError();
     double angleCommand = angleError * Pk_angle;
@@ -60,7 +60,7 @@ bool Controller::isTargetReached() {
 
     // Get the distance between actual position and target
     double distance = calculateDistanceError();
-    return distance < DISTANCE_TRESHOLD;
+    return distance < DISTANCE_THRESHOLD;
 }
 
 double Controller::calculateAngleError() {

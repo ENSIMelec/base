@@ -2,9 +2,8 @@
 // Created by Taoufik on 12/11/2019.
 //
 
-#ifndef ROBOT_CONTROLLER_H
-#define ROBOT_CONTROLLER_H
-
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
 
 #include "PID.h"
 #include "SerialCodeurManager.h"
@@ -17,7 +16,7 @@
 
 class Controller {
 
-#define DISTANCE_TRESHOLD 5
+#define DISTANCE_THRESHOLD 5    // Distance in millimeters
 
 public:
     /**
@@ -80,4 +79,4 @@ private:
 };
 
 
-#endif //ROBOT_CONTROLLER_H
+#endif //CONTROLLER_H
