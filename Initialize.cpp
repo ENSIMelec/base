@@ -15,9 +15,9 @@ Config * Initialize::start(bool log) {
 
     initWiringPi();
     initMotorManager();
-    initOdometry();
+//    initOdometry();
     initController();
-    initActionManager();
+//    initActionManager();
 
     return configuration;
 }
@@ -63,3 +63,18 @@ void Initialize::initActionManager() {
     actionManager = new ActionManager(servos_fd, configuration->getNbAX12());
     if(allowLogging) cout << "done" << endl;
 }
+
+void Initialize::end() {
+    if(allowLogging) cout << "Quitting the application ... ";
+    controller->stopMotors();
+
+    // Resetting the AX12, very important if you want to start them afterward
+    actionManager->close();
+
+    // Closing file descriptors
+    close(motor_fd);
+    close(servos_fd);
+
+    if(allowLogging) cout << "done" << endl;
+}
+

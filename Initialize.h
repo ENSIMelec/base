@@ -17,7 +17,14 @@ const string RESOURCES_PATH = "/home/pi/Documents/Krabbs/res/";
 class Initialize {
 public:
     static Config * start(bool log = true);
+    static void end();
+
+    // ----- Getters -----
     static Config * getConfiguration() {return configuration;}
+    static Controller * getController() {return controller;}
+    static Odometry * getOdometry() {return odometry;}
+    static ActionManager * getActionManager() {return actionManager;}
+    static MotorManager * getMotorManager() {return motorManager;}
 
 private:
     inline static bool allowLogging;
