@@ -2,8 +2,8 @@
 // Created by Tom on 29/04/2022.
 //
 
-#ifndef KRABBS_OBJECTIVE_H
-#define KRABBS_OBJECTIVE_H
+#ifndef OBJECTIVE_H
+#define OBJECTIVE_H
 
 // Includes
 #include <string>
@@ -22,12 +22,20 @@ public:
 
     void logInfos();
 
+    Point *getNextPoint();
+    bool isDone() const {return done;}
+    string getName() const {return name;}
+
+    Point * getCurrentPoint() {return currentPoint;}
 private:
     string name;
     bool optional = false;
 
+    bool done = false;
+
+    int currentPointIndex = 0;
+    Point * currentPoint{};
     vector<Point *> points;
 };
 
-
-#endif //KRABBS_OBJECTIVE_H
+#endif //OBJECTIVE_H

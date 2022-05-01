@@ -2,9 +2,10 @@
 // Created by Tom on 29/04/2022.
 //
 
-#include "Objective.h"
+#include <iostream>
+using namespace std;
 
-#include <utility>
+#include "Objective.h"
 
 Objective::Objective(string name) {
     this->name = std::move(name);
@@ -15,6 +16,9 @@ void Objective::setOptional(bool optional) {
 }
 
 void Objective::addPoint(Point * point) {
+    // Setting the current point if it is the first
+    if(points.empty()) currentPoint = point;
+
     points.push_back(point);
 }
 
@@ -35,3 +39,18 @@ void Objective::logInfos() {
         cout << "\tType: " << p->getType() << endl;
     }
 }
+
+Point *Objective::getNextPoint() {
+
+    currentPointIndex++;
+    if(currentPointIndex >= points.size()) {
+        // There is no more points
+        done = true;
+        return nullptr;
+    } else {
+        // Return the next point in the objective
+        currentPoint = points.at(currentPointIndex);
+        return currentPoint;
+    }
+}
+
