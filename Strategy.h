@@ -6,29 +6,23 @@
 #define KRABBS_STRATEGY_H
 
 #include <vector>
+#include <string>
 #include "Controller.h"
 #include "Point.h"
+#include "Objective.h"
 
 using namespace std;
 
 class Strategy {
 public:
-    Strategy(Point * startingPoint);
+    Strategy(const string& path, const string& name);
+    void logObjectives();
 
-    Point *getCurrentPoint();
-
-    bool isDone();
-    void setNextPoint(Controller *pController);
-    void addPoint(Point *point);
-    void initController(Controller *controller);
-
-    bool m_isDone = false;
+    bool isStrategyDone() const {return strategyIsDone;}
 private:
-    int m_currentPointIndex = 0;
+    vector<Objective *> * objectives;
 
-
-    vector<Point*> m_points;
-    Point * m_currentPoint;
+    bool strategyIsDone = false;
 };
 
 
