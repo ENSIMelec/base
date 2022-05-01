@@ -6,20 +6,19 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/info_parser.hpp>
 
-// TODO : clean this file
-
-// Uncomment to go in debug mod
-//#define DEBUG_CONFIG
+using namespace std;
 
 class Config
 {
 public:
 
-	/**
+    explicit Config(const string& basicString);
+
+/**
 	 * @brief Load the configuration from a file
 	 * @param filename Path to the config file (.info)
 	 */
-	void loadFromFile(std::string filename);
+	void loadFromFile(const std::string& filename);
 
     /// @brief Print the configuration to the console
 	void printConfig() const;
@@ -75,24 +74,24 @@ public:
 
 private:
 	// Attributes
-	int delta_asserv;
-	int nbAX12;
+	int delta_asserv{};
+	int nbAX12{};
 
 	std::string ipServeur;
-	int port;
+	int port{};
 
-	double pid_kpdepPathFinding, pid_kpDep, pid_kiDep, pid_kdDep;
-	double pid_kiPos,pid_kpPos, pid_kdPos;
-	double pid_kpA, pid_kiA, pid_kdA;
-	double pid_kpV_low, pid_kiV_low, pid_kdV_low, pid_kpV_medium, pid_kiV_medium, pid_kdV_medium, pid_kpV_high, pid_kiV_high, pid_kdV_high;
+	double pid_kpdepPathFinding{}, pid_kpDep{}, pid_kiDep{}, pid_kdDep{};
+	double pid_kiPos{},pid_kpPos{}, pid_kdPos{};
+	double pid_kpA{}, pid_kiA{}, pid_kdA{};
+	double pid_kpV_low{}, pid_kiV_low{}, pid_kdV_low{}, pid_kpV_medium{}, pid_kiV_medium{}, pid_kdV_medium{}, pid_kpV_high{}, pid_kiV_high{}, pid_kdV_high{};
 
-	double CoeffGLong, CoeffDLong, CoeffAnglD, CoeffAnglG;
+	double CoeffGLong{}, CoeffDLong{}, CoeffAnglD{}, CoeffAnglG{};
 
-	int I2C_SERVOS, I2C_LANCEUR, I2C_MOTEURS,I2C_STEPPER;
+	int I2C_SERVOS{}, I2C_LANCEUR{}, I2C_MOTEURS{},I2C_STEPPER{};
 
-	int temps_match;
+	int temps_match{};
 
-	bool WAIT_DEVICES_CONNECTIONS;
+	bool WAIT_DEVICES_CONNECTIONS{};
 };
 
 #endif //CONFIG_H_INCLUDED
