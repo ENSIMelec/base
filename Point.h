@@ -2,11 +2,11 @@
 // Created by Taoufik on 20/12/2019.
 //
 
-#ifndef ROBOT_POINT_H
-#define ROBOT_POINT_H
+#ifndef POINT_H
+#define POINT_H
 
-#include "Controller.h"
 #include <string>
+#include <utility>
 
 using namespace std;
 
@@ -41,14 +41,16 @@ public:
     void setAction(const string& action) {m_action = action;}
     string getAction() {return m_action;}
 
-    void setDirection(string direction) {m_direction = direction;}
+    void setDirection(string direction) {m_direction = std::move(direction);}
 
     void setActionWaiting(bool wait) {m_waitForAction = wait;}
-    void setBlocage(string blocked) {m_blocked = blocked;}
-    void setCommentary(string commentary) {m_commentary = commentary;}
+    void setBlocage(string blocked) {m_blocked = std::move(blocked);}
+    void setCommentary(string commentary) {m_commentary = std::move(commentary);}
 
     string getType() {return m_type;}
     void setType(string type) {m_type = type;}
+
+    void logTargetInformation();
 
 private:
     float m_x{};
@@ -67,4 +69,4 @@ private:
 };
 
 
-#endif //ROBOT_POINT_H
+#endif //POINT_H
