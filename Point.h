@@ -5,40 +5,65 @@
 #ifndef ROBOT_POINT_H
 #define ROBOT_POINT_H
 
-using namespace std;
-
 #include "Controller.h"
+#include <string>
+
+using namespace std;
 
 class Point {
 
 public:
-
+    Point() = default;
     Point(float mX, float mY, float mTheta);
-    float getX() const;
-    float getY() const;
-    float getTheta() const;
 
-    float getMDistanceTolerance() const;
-    void setMDistanceTolerance(float mDistanceTolerance);
+    // ----- Getters & Setters -----
+    float getX() const {return m_x;}
+    void setX(float x) {m_x = x;}
 
-    float getMAngleTolerance() const;
-    void setMAngleTolerance(float mAngleTolerance);
+    float getY() const {return m_y;}
+    void setY(float y) {m_y = y;}
 
-    int getMSpeed() const;
-    void setMSpeed(int mSpeed);
+    float getTheta() const {return m_theta;}
+    void setTheta(float theta) {m_theta = theta;}
 
-    int getMTimeout() const;
-    void setMTimeout(int mTimeout);
-//    std::ostream& operator<<(std::ostream& os, const Point& obj);
+    float getDistanceTolerance() const {return m_distance_tolerance;}
+    void setDistanceTolerance(float distance_tolerance) {m_distance_tolerance = distance_tolerance;}
+
+    float getAngleTolerance() const {return m_angle_tolerance;}
+    void setAngleTolerance(float mAngleTolerance) {m_angle_tolerance = mAngleTolerance;}
+
+    int getSpeed() const {return m_speed;}
+    void setSpeed(int mSpeed) {m_speed = mSpeed;}
+
+    int getTimeout() const {return m_timeout;}
+    void setTimeout(int mTimeout) {m_timeout = mTimeout;}
+
+    void setAction(const string& action) {m_action = action;}
+    string getAction() {return m_action;}
+
+    void setDirection(string direction) {m_direction = direction;}
+
+    void setActionWaiting(bool wait) {m_waitForAction = wait;}
+    void setBlocage(string blocked) {m_blocked = blocked;}
+    void setCommentary(string commentary) {m_commentary = commentary;}
+
+    string getType() {return m_type;}
+    void setType(string type) {m_type = type;}
+
 private:
-
-    float m_x = 0;
-    float m_y = 0;
-    float m_theta = 0;
-    float m_distance_tolerance;
-    float m_angle_tolerance;
-    int m_speed;
-    int m_timeout;
+    float m_x{};
+    float m_y{};
+    float m_theta{};
+    float m_distance_tolerance{};
+    float m_angle_tolerance{};
+    int m_speed{};
+    int m_timeout{};
+    string m_action = {};
+    bool m_waitForAction = false;
+    string m_blocked;
+    string m_commentary;
+    string m_type;
+    string m_direction;
 };
 
 

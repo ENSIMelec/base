@@ -7,8 +7,8 @@ using namespace std;
  * @param codeurs
  */
 
-Odometry::Odometry(SerialCodeurManager &codeurs) : m_codeurs(codeurs){
-
+Odometry::Odometry() {
+    m_codeurs = new SerialCodeurManager();
 
     // nouvelle approche odométrie
     //this->PERIM_ROUE = 31.5*M_PI;
@@ -27,7 +27,7 @@ Odometry::Odometry(SerialCodeurManager &codeurs) : m_codeurs(codeurs){
     this->COEF_CORRECTEUR = Configuration::instance().getFloat("coeff_correcteur");
     this->ENTRAXE = Configuration::instance().getFloat("entraxe");
     
-    // init
+    // start
     this->m_pos.theta = 0;
 
 }
@@ -41,11 +41,11 @@ void Odometry::update() {
 
 
     // récupérer les tics des codeurs + réinitialisation
-    m_codeurs.readAndReset();
+    m_codeurs->readAndReset();
 
     // Récupéreration des tics codeurs
-    long int ticksLeft = m_codeurs.getLeftTicks();
-    long int ticksRight = m_codeurs.getRightTicks();
+    long int ticksLeft = m_codeurs->getLeftTicks();
+    long int ticksRight = m_codeurs->getRightTicks();
 
     // calculer la distance de effectué par chaque roue
     float distanceLeft = ticksLeft * (PERIM_ROUE/RESOLUTION);
@@ -105,7 +105,7 @@ void Odometry::update() {
 
     // Calcul de la vitesse angulaire et linéaire
     // Actualisation du temps
-    this->m_lastTime = m_codeurs.getTime();
+    this->m_lastTime = m_codeurs->getTime();
 
     float timestep      = MathUtils::millis2sec(m_lastTime); // micros -> s
     //float timestep      = 0.01; // micros -> s

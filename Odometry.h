@@ -45,7 +45,7 @@ class Odometry {
 
 public:
 
-    explicit Odometry(SerialCodeurManager &codeurs);
+    explicit Odometry();
     void debug();
     /*void calcul_position_segment(float distance, float angle);
     void calcul_position_arc(float distance, float angle);*/
@@ -114,7 +114,7 @@ protected:
     float COEF_CORRECTEUR = 0;
     float ENTRAXE = 0; // entraxe entre les deux roues en mm
 
-    SerialCodeurManager& m_codeurs;
+    SerialCodeurManager * m_codeurs;
 
 };
 

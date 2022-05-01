@@ -1,10 +1,13 @@
 #include "Config.h"
 
 using namespace std;
-// Shortcut for namespace
 namespace pt = boost::property_tree;
 
-void Config::loadFromFile(string filename)
+Config::Config(const string& filename) {
+    loadFromFile(filename);
+}
+
+void Config::loadFromFile(const string& filename)
 {
 	// Creating ptree object
 	pt::ptree tree;
@@ -68,46 +71,46 @@ void Config::loadFromFile(string filename)
 	printConfig();
 #endif
 }
-
 int Config::getDeltaAsserv() const { return delta_asserv; }
+
 int Config::getNbAX12() const { return nbAX12; }
-
 string Config::getIpServer() const { return ipServeur; }
-int Config::getPort() const { return port; }
 
+int Config::getPort() const { return port; }
 double Config::getPIDkpA() const { return pid_kpA; }
 double Config::getPIDkiA() const { return pid_kiA; }
-double Config::getPIDkdA() const { return pid_kdA; }
 
+double Config::getPIDkdA() const { return pid_kdA; }
 double Config::getPIDkpDepPathfinding() const { return pid_kpdepPathFinding; }
 double Config::getPIDkpDep() const { return pid_kpDep; }
 double Config::getPIDkiDep() const { return pid_kiDep; }
-double Config::getPIDkdDep() const { return pid_kdDep; }
 
+double Config::getPIDkdDep() const { return pid_kdDep; }
 double Config::getPIDkpPos() const { return pid_kpPos; }
 double Config::getPIDkiPos() const { return pid_kiPos; }
-double Config::getPIDkdPos() const { return pid_kdPos; }
 
+double Config::getPIDkdPos() const { return pid_kdPos; }
 double Config::getPIDkpVLow() const { return pid_kpV_low; }
 double Config::getPIDkiVLow() const { return pid_kiV_low; }
-double Config::getPIDkdVLow() const { return pid_kdV_low; }
 
+double Config::getPIDkdVLow() const { return pid_kdV_low; }
 double Config::getPIDkpVMedium() const { return pid_kpV_medium; }
 double Config::getPIDkiVMedium() const { return pid_kiV_medium; }
-double Config::getPIDkdVMedium() const { return pid_kdV_medium; }
 
+double Config::getPIDkdVMedium() const { return pid_kdV_medium; }
 double Config::getPIDkpVHigh() const { return pid_kpV_high; }
 double Config::getPIDkiVHigh() const { return pid_kiV_high; }
-double Config::getPIDkdVHigh() const { return pid_kdV_high; }
 
+double Config::getPIDkdVHigh() const { return pid_kdV_high; }
 double Config::getCoeffGLong() const { return CoeffGLong; }
 double Config::getCoeffDLong() const { return CoeffDLong; }
 double Config::getCoeffAnglD() const { return CoeffAnglD; }
-double Config::getCoeffAnglG() const { return CoeffAnglG; }
 
+double Config::getCoeffAnglG() const { return CoeffAnglG; }
 int Config::get_I2C_SERVOS() const { return I2C_SERVOS; }
 int Config::get_I2C_LANCEUR() const { return I2C_LANCEUR; }
 int Config::get_I2C_MOTEURS() const { return I2C_MOTEURS; }
+
 int Config::get_I2C_STEPPER() const { return I2C_STEPPER; }
 
 int Config::get_temps_match() const { return temps_match; }
