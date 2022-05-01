@@ -55,6 +55,8 @@ void Controller::stopMotors() {
 }
 
 bool Controller::isTargetReached() {
+    // This is only for test purpose
+    return true;
 
     // Get the distance between actual position and target
     double distance = calculateDistanceError();
@@ -92,4 +94,8 @@ double Controller::calculateDistanceError() {
     double dY = currentPosition.y - targetPosition.y;
 
     return sqrt(dX * dX + dY * dY);
+}
+
+void Controller::setTargetPoint(Point *point) {
+    return;
 }

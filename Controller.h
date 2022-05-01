@@ -39,6 +39,9 @@ public:
 
     void stopMotors();
     bool isTargetReached();
+
+    void setTargetPoint(Point* point);
+
 private:
 
     enum TrajectoryType {
