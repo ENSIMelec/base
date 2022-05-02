@@ -4,11 +4,11 @@
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 
-#include "Initialize.h"
+#include "Initializer.h"
 
 #define EXIT_FAIL_I2C 1
 
-Config * Initialize::start(bool log) {
+Config * Initializer::start(bool log) {
     allowLogging = log;
 
     configuration = new Config(RESOURCES_PATH + "config.info");
@@ -22,7 +22,7 @@ Config * Initialize::start(bool log) {
     return configuration;
 }
 
-int Initialize::initWiringPi() {
+int Initializer::initWiringPi() {
     if(allowLogging) cout << "Initializing WiringPi ... ";
 	wiringPiSetupGpio();
 
@@ -40,31 +40,31 @@ int Initialize::initWiringPi() {
     return EXIT_SUCCESS;
 }
 
-void Initialize::initMotorManager() {
+void Initializer::initMotorManager() {
     if(allowLogging) cout << "Initializing the motor manager ... ";
 	motorManager = new MotorManager(motor_fd);
     if(allowLogging) cout << "done" << endl;
 }
 
-void Initialize::initOdometry() {
+void Initializer::initOdometry() {
     if(allowLogging) cout << "Initializing the odometry ... ";
     odometry = new Odometry();
     if(allowLogging) cout << "done" << endl;
 }
 
-void Initialize::initController() {
+void Initializer::initController() {
     if(allowLogging) cout << "Initializing the controller ... ";
     controller = new Controller(odometry, motorManager, configuration);
     if(allowLogging) cout << "done" << endl;
 }
 
-void Initialize::initActionManager() {
+void Initializer::initActionManager() {
     if(allowLogging) cout << "Initializing the action manager ... ";
     actionManager = new ActionManager(servos_fd, configuration->getNbAX12());
     if(allowLogging) cout << "done" << endl;
 }
 
-void Initialize::end() {
+void Initializer::end() {
     if(allowLogging) cout << "Quitting the application ... ";
     controller->stopMotors();
 

@@ -14,7 +14,7 @@
 using namespace std;
 const string RESOURCES_PATH = "/home/pi/Documents/Krabbs/res/";
 
-class Initialize {
+class Initializer {
 public:
     static Config * start(bool log = true);
     static void end();
