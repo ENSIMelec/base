@@ -20,10 +20,6 @@ void Config::loadFromFile(const string& filename)
     }
 
     // Reading the attributes from the config file
-	delta_asserv = tree.get<int>("asservissement.delta_asserv");
-
-	nbAX12 = tree.get<int>("asservissement.nbAX12");
-
 	pid_kpA = tree.get<double>("asservissement.pid_kpa");
 	pid_kiA = tree.get<double>("asservissement.pid_kia");
 	pid_kdA = tree.get<double>("asservissement.pid_kda");
@@ -54,34 +50,26 @@ void Config::loadFromFile(const string& filename)
 	CoeffAnglD = tree.get<double>("asservissement.CoeffAnglD");
 	CoeffAnglG = tree.get<double>("asservissement.CoeffAnglG");
 
-	I2C_SERVOS = tree.get<int>("asservissement.I2C_SERVOS");
-	I2C_LANCEUR = tree.get<int>("asservissement.I2C_LANCEUR");
-	I2C_MOTEURS = tree.get<int>("asservissement.I2C_MOTEURS");
-	I2C_STEPPER = tree.get<int>("asservissement.I2C_STEPPER");
+	I2C_SERVOS = tree.get<int>("i2c.servos");
+    I2C_MOTORS = tree.get<int>("i2c.motors");
 
-	temps_match = tree.get<int>("asservissement.temps_match");
-
-	WAIT_DEVICES_CONNECTIONS = tree.get<bool>("asservissement.WAIT_DEVICES_CONNECTIONS");
-
-	ipServeur = tree.get<string>("asservissement.ipServeur");
-	port = tree.get<int>("asservissement.port");
+    match_time = tree.get<int>("global.match_time");
+    nbAX12 = tree.get<int>("global.nbAX12");
+    update_time = tree.get<int>("global.update_time");
 
 #ifdef DEBUG_CONFIG
     // Display the config
 	printConfig();
 #endif
 }
-int Config::getDeltaAsserv() const { return delta_asserv; }
+int Config::getUpdateTime() const { return update_time; }
 
 int Config::getNbAX12() const { return nbAX12; }
-string Config::getIpServer() const { return ipServeur; }
 
-int Config::getPort() const { return port; }
 double Config::getPIDkpA() const { return pid_kpA; }
 double Config::getPIDkiA() const { return pid_kiA; }
 
 double Config::getPIDkdA() const { return pid_kdA; }
-double Config::getPIDkpDepPathfinding() const { return pid_kpdepPathFinding; }
 double Config::getPIDkpDep() const { return pid_kpDep; }
 double Config::getPIDkiDep() const { return pid_kiDep; }
 
@@ -108,22 +96,14 @@ double Config::getCoeffAnglD() const { return CoeffAnglD; }
 
 double Config::getCoeffAnglG() const { return CoeffAnglG; }
 int Config::get_I2C_SERVOS() const { return I2C_SERVOS; }
-int Config::get_I2C_LANCEUR() const { return I2C_LANCEUR; }
-int Config::get_I2C_MOTEURS() const { return I2C_MOTEURS; }
+int Config::get_I2C_MOTORS() const { return I2C_MOTORS; }
 
-int Config::get_I2C_STEPPER() const { return I2C_STEPPER; }
-
-int Config::get_temps_match() const { return temps_match; }
-
-bool Config::get_WAIT_DEVICES_CONNECTIONS() const { return WAIT_DEVICES_CONNECTIONS; }
+int Config::getMatchTime() const { return match_time; }
 
 void Config::printConfig() const {
 	cout << endl << "--- CONFIGURATION ---" << endl;
-	cout << "Temps du match : " << get_temps_match() << endl;
-
-	cout << "Ip serveur : " << getIpServer() << endl;
-	cout << "Port serveur : " << getPort() << endl;
-	cout << "Temps minimum entre deux appels d'asservissement : " << getDeltaAsserv() << endl << endl;
+	cout << "Temps du match : " << getMatchTime() << endl;
+    cout << "Temps minimum entre deux appels d'asservissement : " << getUpdateTime() << endl << endl;
 	cout << "Nombre d'ax12Manager à connecter : " << getNbAX12() << endl;
 
 	cout << "Coefficients : " << endl;
@@ -140,8 +120,6 @@ void Config::printConfig() const {
 
 	cout << "I2C :" << endl;
 	cout << "\tSERVOS : " << get_I2C_SERVOS() << endl;
-	cout << "\tLANCEUR : " << get_I2C_LANCEUR() << endl;
-	cout << "\tMOTEURS : " << get_I2C_MOTEURS() << endl;
+	cout << "\tMOTEURS : " << get_I2C_MOTORS() << endl;
 	cout << "--- FIN DE LA CONFIGURATION ---" << endl;
-	return;
 }

@@ -12,7 +12,7 @@ class Config
 {
 public:
 
-    explicit Config(const string& basicString);
+    explicit Config(const string& filename);
 
 /**
 	 * @brief Load the configuration from a file
@@ -27,17 +27,13 @@ public:
      * @brief Get the waiting time between each call to the asserv call
      * @return Delta time in milliseconds
      */
-	int getDeltaAsserv() const;
+	int getUpdateTime() const;
 	int getNbAX12() const;
-
-	std::string getIpServer() const;
-	int getPort() const;
 
 	double getPIDkpA() const;
 	double getPIDkiA() const;
 	double getPIDkdA() const;
 
-	double getPIDkpDepPathfinding() const;
 	double getPIDkpDep() const;
 	double getPIDkiDep() const;
 	double getPIDkdDep() const;
@@ -64,21 +60,13 @@ public:
 	double getCoeffAnglG() const;
 
 	int get_I2C_SERVOS() const;
-	int get_I2C_LANCEUR() const;
-	int get_I2C_MOTEURS() const;
-	int get_I2C_STEPPER() const;
+	int get_I2C_MOTORS() const;
 
-	int get_temps_match() const;
-
-	bool get_WAIT_DEVICES_CONNECTIONS() const;
-
+	int getMatchTime() const;
 private:
 	// Attributes
-	int delta_asserv{};
+	int update_time{};
 	int nbAX12{};
-
-	std::string ipServeur;
-	int port{};
 
 	double pid_kpdepPathFinding{}, pid_kpDep{}, pid_kiDep{}, pid_kdDep{};
 	double pid_kiPos{},pid_kpPos{}, pid_kdPos{};
@@ -87,9 +75,9 @@ private:
 
 	double CoeffGLong{}, CoeffDLong{}, CoeffAnglD{}, CoeffAnglG{};
 
-	int I2C_SERVOS{}, I2C_LANCEUR{}, I2C_MOTEURS{},I2C_STEPPER{};
+	int I2C_SERVOS{}, I2C_MOTORS{};
 
-	int temps_match{};
+	int match_time{};
 
 	bool WAIT_DEVICES_CONNECTIONS{};
 };

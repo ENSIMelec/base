@@ -29,11 +29,11 @@ public:
 private:
     inline static bool allowLogging;
 
-    inline static Config *configuration;
-    inline static MotorManager *motorManager;
-    inline static Odometry *odometry;
-    inline static Controller *controller;
-    inline static ActionManager *actionManager;
+    inline static Config *configuration = nullptr;
+    inline static MotorManager *motorManager = nullptr;
+    inline static Odometry *odometry = nullptr;
+    inline static Controller *controller = nullptr;
+    inline static ActionManager *actionManager = nullptr;
 
     inline static int motor_fd;
     inline static int servos_fd;
@@ -41,11 +41,8 @@ private:
     static int initWiringPi();
     static void initMotorManager();
     static void initController();
-
     static void initOdometry();
-
     static void initActionManager();
-
 };
 
 #endif //KRABBS_INITIALIZE_H

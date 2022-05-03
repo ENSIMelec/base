@@ -15,9 +15,9 @@ Config * Initializer::start(bool log) {
 
     initWiringPi();
     initMotorManager();
-//    initOdometry();
+    initOdometry();
     initController();
-//    initActionManager();
+    initActionManager();
 
     return configuration;
 }
@@ -27,7 +27,7 @@ int Initializer::initWiringPi() {
 	wiringPiSetupGpio();
 
     // Arduino for the motors
-    motor_fd = wiringPiI2CSetup(configuration->get_I2C_MOTEURS());
+    motor_fd = wiringPiI2CSetup(configuration->get_I2C_MOTORS());
 
     // Arduino for the servos
     servos_fd = wiringPiI2CSetup(configuration->get_I2C_SERVOS());
@@ -66,10 +66,10 @@ void Initializer::initActionManager() {
 
 void Initializer::end() {
     if(allowLogging) cout << "Quitting the application ... ";
-    controller->stopMotors();
+    if(controller != nullptr) controller->stopMotors();
 
     // Resetting the AX12, very important if you want to start them afterward
-    actionManager->close();
+    if(actionManager != nullptr) actionManager->close();
 
     // Closing file descriptors
     close(motor_fd);
