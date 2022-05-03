@@ -33,7 +33,7 @@ public:
 
     void update();
 
-    void setTargetXY(int x, int y);
+    void setTargetXY(double x, double y);
     void setTargetAngle(double angle);
 
     void stopMotors();

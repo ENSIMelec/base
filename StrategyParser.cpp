@@ -8,6 +8,8 @@
 #include <fstream>
 
 #include "lib/json.hpp"
+#include "MathUtils.h"
+
 using json = nlohmann::json;
 
 /**
@@ -102,7 +104,7 @@ int StrategyParser::parseObjectivePoints(const string& path, const string& objFi
                     } else if(key == "Y") {
                         point->setY(value);
                     } else if(key == "angle") {
-                        point->setTheta(value);
+                        point->setTheta(MathUtils::deg2rad(value));
                     } else if(key == "action") {
                         point->setAction(value);
                     } else if(key == "attAction") {

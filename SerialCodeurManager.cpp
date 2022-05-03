@@ -32,24 +32,20 @@ SerialCodeurManager::SerialCodeurManager()
     nextTime = millis () + 10 ;
 }
 
-//SerialCodeurManager::~SerialCodeurManager() {
-//    serialClose(encoders_fd);
-//}
-
 void SerialCodeurManager::readAndReset()
 {
     char SerieData = ' ';
 
-    char tickd [10000];
-    char tickg [10000];
-    char temps [100000];
+    char tickd [100];
+    char tickg [100];
+    char temps [100];
     int g = 0;
     int d = 0;
     int t = 0;
 
-    memset(tickd, ' ', 10000);
-    memset(tickg, ' ', 10000);
-    memset(temps, ' ', 100000);
+    memset(tickd, ' ', 100);
+    memset(tickg, ' ', 100);
+    memset(temps, ' ', 100);
 
 
     if (millis() > nextTime)
@@ -64,7 +60,7 @@ void SerialCodeurManager::readAndReset()
 
     //delay (10) ;
 
-    while(serialDataAvail(encoders_fd)<=0 || (SerieData = serialGetchar(encoders_fd))!='?'){
+    while(serialDataAvail(encoders_fd) <= 0 || (SerieData = serialGetchar(encoders_fd)) != '?'){
         serialPutchar (encoders_fd, 'C');
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
 //        cout<<"Attente réception codeurs"<<endl;

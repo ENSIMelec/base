@@ -53,8 +53,6 @@ Point * Strategy::getNextPoint() {
         }
     }
 
-    point->logTargetInformation();
-
     return point;
 }
 

@@ -6,13 +6,13 @@
 void Controller::update() {
 
     double distance = calculateDistanceError() * Pk_distance;
-    int distanceCommand = MathUtils::constrain(distance, 0.0f, 100.0f);
+    double distanceCommand = MathUtils::constrain(distance, 0.0, 100.0);
 
     double angleError = calculateAngleError();
     double angleCommand = angleError * Pk_angle;
 
     // Apply commands
-    motorManager->setOrder(distanceCommand - angleCommand, distanceCommand + angleCommand);
+    motorManager->setOrder((int) (distanceCommand - angleCommand), (int) (distanceCommand + angleCommand));
 }
 
 void Controller::debug() {
@@ -33,6 +33,28 @@ void Controller::debug() {
 #endif
 }
 
+void Controller::setTargetPoint(Point *point) {
+
+    string type = point->getType();
+    if (type == "setXYTheta") {
+        odometry->setPosition(point->getX(), point->getY(), point->getTheta());
+    } else if (type == "setX") {
+        odometry->setX(point->getX());
+    } else if(type == "setY") {
+        odometry->setY(point->getY());
+    } else if(type == "setTheta") {
+        odometry->setTheta(point->getTheta());
+    } else if(type == "moveToPosition") {
+        double x = point->getX();
+        double y = point->getY();
+
+        cout << "Setting target XY to (" << x << ", " << y << ")" << endl;
+        setTargetXY(x, y);
+    } else if(type == "moveToAngle") {
+        setTargetAngle(point->getTheta());
+    }
+}
+
 void Controller::absoluteAngle() {
     double angleError = calculateAngleError();
     command.angle = angleError * Pk_angle;
@@ -45,7 +67,7 @@ void Controller::setTargetAngle(double angle) {
     targetPosition.theta = angle;
 }
 
-void Controller::setTargetXY(int x, int y) {
+void Controller::setTargetXY(double x, double y) {
     targetPosition.x = x;
     targetPosition.y = y;
 }
@@ -55,9 +77,6 @@ void Controller::stopMotors() {
 }
 
 bool Controller::isTargetReached() {
-    // This is only for test purpose
-    return true;
-
     // Get the distance between actual position and target
     double distance = calculateDistanceError();
     return distance < DISTANCE_THRESHOLD;
@@ -94,8 +113,4 @@ double Controller::calculateDistanceError() {
     double dY = currentPosition.y - targetPosition.y;
 
     return sqrt(dX * dX + dY * dY);
-}
-
-void Controller::setTargetPoint(Point *point) {
-    return;
 }

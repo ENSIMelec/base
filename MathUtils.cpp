@@ -8,7 +8,7 @@ float MathUtils::inrange(float x, float min, float max) {
     return periodicmod(x - min, max - min) + min;
 }
 
-float MathUtils::constrain(float value, float min, float max)
+double MathUtils::constrain(double value, double min, double max)
 {
     if (value < min)
         return min;

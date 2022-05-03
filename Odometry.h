@@ -30,13 +30,13 @@ struct Position
      * @param y coordoonée en y initial.
      * @param theta angle initial.
      */
-    Position(float x, float y, float theta) : x(x), y(y), theta(theta){}
+    Position(double x, double y, double theta) : x(x), y(y), theta(theta){}
     // Coordonnée en x
-    float x;
+    double x;
     // Cordonnée en y
-    float y;
+    double y;
     // Angle
-    float theta;
+    double theta;
 };
 /**
  * Calcul la position en temps réél du robot
@@ -63,7 +63,7 @@ public:
     */
     void update();
 
-
+    // ---------- Getters & Setters ----------
     float getDeltaOrientation() const { return m_dAvgTheta; }
     float getDeltaTheta() const { return m_dTheta; }
     float getTotalTheta() const { return m_totalAngle; }
@@ -76,8 +76,14 @@ public:
     float getTotalTicksR() const { return m_totalTicksR; };
     float getEntraxe() const { return ENTRAXE; };
 
+    void setX(float x) {m_pos.x = x;}
+    double getX() {return m_pos.x;}
 
-    double getTheta();
+    void setY(float y) {m_pos.y = y;}
+    double getY() {return m_pos.y;}
+
+    void setTheta(float theta) {m_pos.theta = theta;}
+    double getTheta() {return m_pos.theta;}
 
 protected:
     Position m_pos; /*!< Structure de position de Odometry. */
