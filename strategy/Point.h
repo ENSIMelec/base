@@ -7,6 +7,7 @@
 
 #include <string>
 #include <utility>
+#include "PointType.h"
 
 using namespace std;
 
@@ -41,14 +42,30 @@ public:
     void setAction(const string& action) {m_action = action;}
     string getAction() {return m_action;}
 
+    string getDirection() {return m_direction;}
     void setDirection(string direction) {m_direction = std::move(direction);}
 
     void setActionWaiting(bool wait) {m_waitForAction = wait;}
     void setBlocage(string blocked) {m_blocked = std::move(blocked);}
     void setCommentary(string commentary) {m_commentary = std::move(commentary);}
 
-    string getType() {return m_type;}
-    void setType(string type) {m_type = type;}
+    bool getLissage() {return lissage;}
+    void setLissage(bool l) {lissage = l;}
+
+    PointType getType() {return m_type;}
+    void setType(PointType type) {m_type = type;}
+
+    double getCoefCourbe() {return coeffCourbe;}
+    void setCoefCourbe(double coef) {coeffCourbe = coef;}
+
+    double getDeltaAngle() {return deltaAngle;}
+    void setDeltaAngle(double delta) {deltaAngle = delta;}
+
+    bool getDerapage() {return derapage;}
+    void setDerapage(bool d) {derapage = d;}
+
+    double getDeltaDeplacement() {return deltaDeplacement;}
+    void setDeltaDeplacement(double delta) {deltaDeplacement = delta;}
 
     void logTargetInformation();
 
@@ -64,8 +81,13 @@ private:
     bool m_waitForAction = false;
     string m_blocked;
     string m_commentary;
-    string m_type;
-    string m_direction;
+    PointType m_type;
+    string m_direction = "avant";
+    bool lissage = false;
+    double coeffCourbe = 0;
+    double deltaAngle;
+    bool derapage;
+    double deltaDeplacement;
 };
 
 

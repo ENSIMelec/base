@@ -4,9 +4,8 @@
 #include "SerialCodeurManager.h"
 #include "cmath"
 #include "iostream"
-#include "MathUtils.h"
-#include "Config.h"
-#include "Configuration.h"
+#include "../utility/MathUtils.h"
+#include "../utility/Config.h"
 
 /**
  * @brief Structure de position.
@@ -45,7 +44,7 @@ class Odometry {
 
 public:
 
-    explicit Odometry();
+    explicit Odometry(Config * config);
     void debug();
     /*void calcul_position_segment(float distance, float angle);
     void calcul_position_arc(float distance, float angle);*/

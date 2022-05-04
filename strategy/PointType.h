@@ -1,0 +1,21 @@
+//
+// Created by Tom on 03/05/2022.
+//
+
+#ifndef KRABBS_POINT_TYPE_H
+#define KRABBS_POINT_TYPE_H
+
+enum PointType {
+    POSITION,
+    ANGLE,
+    ANGLE_RELATIF,
+    DEPLACEMENT,
+    DEPLACEMENT_X,
+    DEPLACEMENT_Y,
+    DEPLA_RELATIF,
+    RECALAGE_X,
+    RECALAGE_Y,
+    RECALAGE_XY
+};
+
+#endif //KRABBS_POINT_TYPE_H

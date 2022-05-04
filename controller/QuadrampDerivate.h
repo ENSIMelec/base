@@ -7,15 +7,15 @@
 
 using namespace std;
 #include <cmath>
-#include "MathUtils.h"
-#include "Configuration.h"
+#include "../utility/MathUtils.h"
+#include "../utility/Config.h"
 
 class QuadrampDerivate {
 
 
 public:
     QuadrampDerivate() {};
-    QuadrampDerivate(bool is_distance);
+    QuadrampDerivate(bool is_distance, Config * config);
     ~QuadrampDerivate();
 
     /**

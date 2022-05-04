@@ -1,5 +1,5 @@
 #include "AX12Manager.h"
-#include "Clock.h"
+#include "../utility/Clock.h"
 
 AX12Manager::AX12Manager(int nbAX) : nbAX12(nbAX) {
 	initialisation();

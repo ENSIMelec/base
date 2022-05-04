@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <string>
-#include "Controller.h"
+#include "../controller/Controller.h"
 #include "Point.h"
 #include "Objective.h"
 

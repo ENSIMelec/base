@@ -20,6 +20,21 @@ void Config::loadFromFile(const string& filename)
     }
 
     // Reading the attributes from the config file
+    distanceSpeedMax = tree.get<float>("ramp.distance_speed_max");
+    distanceAccelerationMax = tree.get<float>("ramp.distance_acceleration_max");
+    distanceDecelerationMax = tree.get<float>("ramp.distance_deceleration_max");
+    distanceAnticipationGain = tree.get<float>("ramp.distance_anticipation_gain");
+    distanceWindow = tree.get<float>("ramp.distance_window");
+    angleSpeedMax = tree.get<float>("ramp.angle_speed_max");
+    angleAccelerationMax = tree.get<float>("ramp.angle_acceleration_max");
+    angleDecelerationMax = tree.get<float>("ramp.angle_deceleration_max");
+    angleAnticipationGain = tree.get<float>("ramp.angle_anticipation_gain");
+
+    diametreRoue = tree.get<float>("odometry.diametre_roue");
+    resolution = tree.get<float>("odometry.resolution");
+    coeffCorrecteur = tree.get<float>("odometry.coeff_correcteur");
+    entraxe = tree.get<float>("odometry.entraxe");
+
 	pid_kpA = tree.get<double>("asservissement.pid_kpa");
 	pid_kiA = tree.get<double>("asservissement.pid_kia");
 	pid_kdA = tree.get<double>("asservissement.pid_kda");
@@ -94,6 +109,8 @@ double Config::getCoeffGLong() const { return CoeffGLong; }
 double Config::getCoeffDLong() const { return CoeffDLong; }
 double Config::getCoeffAnglD() const { return CoeffAnglD; }
 
+double Config::getPIDkpDepPathfinding() const {return pid_kpdepPathFinding;}
+
 double Config::getCoeffAnglG() const { return CoeffAnglG; }
 int Config::get_I2C_SERVOS() const { return I2C_SERVOS; }
 int Config::get_I2C_MOTORS() const { return I2C_MOTORS; }
@@ -122,4 +139,56 @@ void Config::printConfig() const {
 	cout << "\tSERVOS : " << get_I2C_SERVOS() << endl;
 	cout << "\tMOTEURS : " << get_I2C_MOTORS() << endl;
 	cout << "--- FIN DE LA CONFIGURATION ---" << endl;
+}
+
+float Config::getDistanceDecelerationMax() {
+    return distanceDecelerationMax;
+}
+
+float Config::getDistanceAccelerationMax() {
+    return distanceAccelerationMax;
+}
+
+float Config::getDistanceSpeedMax() {
+    return distanceSpeedMax;
+}
+
+float Config::getDistanceAnticipationGain() {
+    return distanceAnticipationGain;
+}
+
+float Config::getDistanceWindow() {
+    return distanceWindow;
+}
+
+float Config::getAngleAnticipationGain() {
+    return angleAnticipationGain;
+}
+
+float Config::getAngleDecelerationMax() {
+    return angleDecelerationMax;
+}
+
+float Config::getAngleAccelerationMax() {
+    return angleAccelerationMax;
+}
+
+float Config::getAngleSpeedMax() {
+    return angleSpeedMax;
+}
+
+float Config::getEntraxe() {
+    return entraxe;
+}
+
+float Config::getCoeffCorrecteur() {
+    return coeffCorrecteur;
+}
+
+float Config::getResolution() {
+    return resolution;
+}
+
+float Config::getDiametreRoue() {
+    return diametreRoue;
 }

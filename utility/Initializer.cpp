@@ -48,13 +48,13 @@ void Initializer::initMotorManager() {
 
 void Initializer::initOdometry() {
     if(allowLogging) cout << "Initializing the odometry ... ";
-    odometry = new Odometry();
+    odometry = new Odometry(configuration);
     if(allowLogging) cout << "done" << endl;
 }
 
 void Initializer::initController() {
     if(allowLogging) cout << "Initializing the controller ... ";
-    controller = new Controller(odometry, motorManager, configuration);
+    controller = new Controller(motorManager, odometry, configuration);
     if(allowLogging) cout << "done" << endl;
 }
 
@@ -66,7 +66,7 @@ void Initializer::initActionManager() {
 
 void Initializer::end() {
     if(allowLogging) cout << "Quitting the application ... ";
-    if(controller != nullptr) controller->stopMotors();
+    if(controller != nullptr) controller->stop();
 
     // Resetting the AX12, very important if you want to start them afterward
     if(actionManager != nullptr) actionManager->close();

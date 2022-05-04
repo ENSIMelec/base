@@ -7,9 +7,9 @@
 
 #include <string>
 #include "Config.h"
-#include "MotorManager.h"
-#include "Controller.h"
-#include "ActionManager.h"
+#include "../controller/MotorManager.h"
+#include "../controller/Controller.h"
+#include "../actuators/ActionManager.h"
 
 using namespace std;
 const string RESOURCES_PATH = "/home/pi/Documents/Krabbs/res/";

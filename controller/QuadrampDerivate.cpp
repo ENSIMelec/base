@@ -6,18 +6,18 @@
 #include "iostream"
 using namespace std;
 
-QuadrampDerivate::QuadrampDerivate(bool is_distance) {
+QuadrampDerivate::QuadrampDerivate(bool is_distance, Config * config) {
 
 
     m_prevConsigneVitesse = 0;
     m_is_reached = true;
 
     if(is_distance) {
-        m_speed_max_arr = Configuration::instance().getFloat("distance_speed_max");
+        m_speed_max_arr = config->getDistanceSpeedMax();
         m_speed_max_av = m_speed_max_arr;
 
-        m_acceleration_max_av = Configuration::instance().getFloat("distance_acceleration_max"); //Accélération avant
-        m_deceleration_max_av = Configuration::instance().getFloat("distance_deceleration_max"); //Décélération avant
+        m_acceleration_max_av = config->getDistanceAccelerationMax(); //Accélération avant
+        m_deceleration_max_av = config->getDistanceDecelerationMax(); //Décélération avant
 
 
         m_acceleration_max_arr = m_acceleration_max_av; //Accélération arrière
@@ -25,19 +25,19 @@ QuadrampDerivate::QuadrampDerivate(bool is_distance) {
 
         // Gain anticipation
         // Coeff déterminant le début de la rampe de décélération en rotation
-        m_gainAnticipation_av = Configuration::instance().getFloat("distance_anticipation_gain"); // avant
+        m_gainAnticipation_av = config->getDistanceAnticipationGain(); // avant
         m_gainAnticipation_arr = m_gainAnticipation_av; // arrière
 
         // window
-        m_window_reach = Configuration::instance().getFloat("distance_window");; //mm
+        m_window_reach = config->getDistanceWindow(); //mm
     }
     else {
 
-        m_speed_max_arr = Configuration::instance().getFloat("angle_speed_max");
+        m_speed_max_arr = config->getAngleSpeedMax();
         m_speed_max_av = m_speed_max_arr;
 
-        m_acceleration_max_av = Configuration::instance().getFloat("angle_acceleration_max"); //Accélération avant
-        m_deceleration_max_av = Configuration::instance().getFloat("angle_deceleration_max"); //Décélération avant
+        m_acceleration_max_av = config->getAngleAccelerationMax(); //Accélération avant
+        m_deceleration_max_av = config->getAngleDecelerationMax(); //Décélération avant
 
 
         m_acceleration_max_arr = m_acceleration_max_av; //Accélération arrière
@@ -46,7 +46,7 @@ QuadrampDerivate::QuadrampDerivate(bool is_distance) {
 
         // Gain anticipation
         // Coeff déterminant le début de la rampe de décélération en rotation
-        m_gainAnticipation_av = Configuration::instance().getFloat("angle_anticipation_gain"); // avant
+        m_gainAnticipation_av = config->getAngleAnticipationGain(); // avant
         m_gainAnticipation_arr = m_gainAnticipation_av; // arrière
 
         // window

@@ -7,7 +7,7 @@ using namespace std;
  * @param codeurs
  */
 
-Odometry::Odometry() {
+Odometry::Odometry(Config * config) {
     m_codeurs = new SerialCodeurManager();
 
     // nouvelle approche odométrie
@@ -21,11 +21,11 @@ Odometry::Odometry() {
 
     //this->ENTRAXE = 280;
 
-    float diametre = Configuration::instance().getFloat("diametre_roue");
+    float diametre = config->getDiametreRoue();
     this->PERIM_ROUE = diametre*M_PI; //Diametre * PI
-    this->RESOLUTION = Configuration::instance().getFloat("resolution");
-    this->COEF_CORRECTEUR = Configuration::instance().getFloat("coeff_correcteur");
-    this->ENTRAXE = Configuration::instance().getFloat("entraxe");
+    this->RESOLUTION = config->getResolution();
+    this->COEF_CORRECTEUR = config->getCoeffCorrecteur();
+    this->ENTRAXE = config->getEntraxe();
     
     // start
     this->m_pos.theta = 0;

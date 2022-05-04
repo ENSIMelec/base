@@ -63,6 +63,35 @@ public:
 	int get_I2C_MOTORS() const;
 
 	int getMatchTime() const;
+
+    double getPIDkpDepPathfinding() const;
+
+    float getDistanceSpeedMax();
+
+    float getDistanceAccelerationMax();
+
+    float getDistanceDecelerationMax();
+
+    float getDistanceAnticipationGain();
+
+    float getDistanceWindow();
+
+    float getAngleSpeedMax();
+
+    float getAngleAccelerationMax();
+
+    float getAngleDecelerationMax();
+
+    float getAngleAnticipationGain();
+
+    float getDiametreRoue();
+
+    float getResolution();
+
+    float getCoeffCorrecteur();
+
+    float getEntraxe();
+
 private:
 	// Attributes
 	int update_time{};
@@ -80,6 +109,22 @@ private:
 	int match_time{};
 
 	bool WAIT_DEVICES_CONNECTIONS{};
+
+    float distanceSpeedMax;
+    float distanceAccelerationMax;
+    float distanceDecelerationMax;
+    float distanceAnticipationGain;
+    float distanceWindow;
+    float angleSpeedMax;
+    float angleAccelerationMax;
+    float angleDecelerationMax;
+    float angleAnticipationGain;
+
+    // Odometry
+    float diametreRoue;
+    float resolution;
+    float coeffCorrecteur;
+    float entraxe;
 };
 
 #endif //CONFIG_H_INCLUDED
