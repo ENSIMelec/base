@@ -22,14 +22,13 @@ Odometry::Odometry(Config * config) {
     //this->ENTRAXE = 280;
 
     float diametre = config->getDiametreRoue();
-    this->PERIM_ROUE = diametre*M_PI; //Diametre * PI
+    this->PERIM_ROUE = diametre * M_PI; //Diametre * PI
     this->RESOLUTION = config->getResolution();
     this->COEF_CORRECTEUR = config->getCoeffCorrecteur();
     this->ENTRAXE = config->getEntraxe();
     
     // start
     this->m_pos.theta = 0;
-
 }
 
 /**

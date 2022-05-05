@@ -92,6 +92,8 @@ public:
 
     float getEntraxe();
 
+    double getCoeffAcceleration();
+
 private:
 	// Attributes
 	int update_time{};
@@ -125,6 +127,7 @@ private:
     float resolution;
     float coeffCorrecteur;
     float entraxe;
+    double coeffAcceleration;
 };
 
 #endif //CONFIG_H_INCLUDED

@@ -60,7 +60,11 @@ void Initializer::initController() {
 
 void Initializer::initActionManager() {
     if(allowLogging) cout << "Initializing the action manager ... ";
-    actionManager = new ActionManager(servos_fd, configuration->getNbAX12());
+    actionManager = new ActionManager(servos_fd, configuration->getNbAX12(), RESOURCES_PATH + "actions/");
+
+    // Initialize the motors in the startup position
+    actionManager->action("initialize.as");
+
     if(allowLogging) cout << "done" << endl;
 }
 

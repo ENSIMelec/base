@@ -27,25 +27,24 @@ public:
     float getTheta() const {return m_theta;}
     void setTheta(float theta) {m_theta = theta;}
 
-    float getDistanceTolerance() const {return m_distance_tolerance;}
-    void setDistanceTolerance(float distance_tolerance) {m_distance_tolerance = distance_tolerance;}
-
     float getAngleTolerance() const {return m_angle_tolerance;}
     void setAngleTolerance(float mAngleTolerance) {m_angle_tolerance = mAngleTolerance;}
 
-    int getSpeed() const {return m_speed;}
-    void setSpeed(int mSpeed) {m_speed = mSpeed;}
+    int getSpeed() const {return speed;}
+    void setSpeed(int mSpeed) { speed = mSpeed;}
 
-    int getTimeout() const {return m_timeout;}
-    void setTimeout(int mTimeout) {m_timeout = mTimeout;}
+    int getTimeout() const {return timeout;}
+    void setTimeout(int mTimeout) { timeout = mTimeout;}
 
-    void setAction(const string& action) {m_action = action;}
-    string getAction() {return m_action;}
+    void setAction(const string& p_action) { action = p_action;}
+    string getAction() {return action;}
 
-    string getDirection() {return m_direction;}
-    void setDirection(string direction) {m_direction = std::move(direction);}
+    string getDirection() {return direction;}
+    void setDirection(string p_direction) { direction = std::move(p_direction);}
 
-    void setActionWaiting(bool wait) {m_waitForAction = wait;}
+    void setActionAfterMovement(bool p_actionAfterMovement) { actionAfterMovement = p_actionAfterMovement;}
+    bool isActionAfterMovement() const {return actionAfterMovement;}
+
     void setBlocage(string blocked) {m_blocked = std::move(blocked);}
     void setCommentary(string commentary) {m_commentary = std::move(commentary);}
 
@@ -55,17 +54,17 @@ public:
     PointType getType() {return m_type;}
     void setType(PointType type) {m_type = type;}
 
-    double getCoefCourbe() {return coeffCourbe;}
-    void setCoefCourbe(double coef) {coeffCourbe = coef;}
+    double getKpCurve() {return coeffCourbe;}
+    void setKpCurve(double coef) { coeffCourbe = coef;}
 
     double getDeltaAngle() {return deltaAngle;}
     void setDeltaAngle(double delta) {deltaAngle = delta;}
 
-    bool getDerapage() {return derapage;}
-    void setDerapage(bool d) {derapage = d;}
+    bool getSmoothCurve() {return smoothCurve;}
+    void setSmoothCurve(bool p_smoothCurve) { smoothCurve = p_smoothCurve;}
 
-    double getDeltaDeplacement() {return deltaDeplacement;}
-    void setDeltaDeplacement(double delta) {deltaDeplacement = delta;}
+    double getDistanceThreshold() {return distanceThreshold;}
+    void setDistanceThreshold(double p_distanceThreshold) { distanceThreshold = p_distanceThreshold;}
 
     void logTargetInformation();
 
@@ -73,21 +72,20 @@ private:
     float m_x{};
     float m_y{};
     float m_theta{};
-    float m_distance_tolerance{};
     float m_angle_tolerance{};
-    int m_speed{};
-    int m_timeout{};
-    string m_action = {};
-    bool m_waitForAction = false;
+    int speed{};
+    int timeout{};
+    string action = "null";
+    bool actionAfterMovement = true;
     string m_blocked;
     string m_commentary;
     PointType m_type;
-    string m_direction = "avant";
+    string direction = "avant";
     bool lissage = false;
     double coeffCourbe = 0;
     double deltaAngle;
-    bool derapage;
-    double deltaDeplacement;
+    bool smoothCurve;
+    double distanceThreshold;
 };
 
 

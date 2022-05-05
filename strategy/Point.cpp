@@ -19,5 +19,5 @@ void Point::logTargetInformation() {
     // For now let's just print the position
     cout << "Target : (" << m_x << ", " << m_y << ", " << m_theta << "°)" << endl;
     cout << "Type : " << m_type << endl;
-    cout << "Action : " << m_action << "\n" << endl;
+    cout << "Action : " << action << "\n" << endl;
 }

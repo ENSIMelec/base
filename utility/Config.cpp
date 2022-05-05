@@ -30,11 +30,13 @@ void Config::loadFromFile(const string& filename)
     angleDecelerationMax = tree.get<float>("ramp.angle_deceleration_max");
     angleAnticipationGain = tree.get<float>("ramp.angle_anticipation_gain");
 
+
     diametreRoue = tree.get<float>("odometry.diametre_roue");
     resolution = tree.get<float>("odometry.resolution");
     coeffCorrecteur = tree.get<float>("odometry.coeff_correcteur");
     entraxe = tree.get<float>("odometry.entraxe");
 
+    coeffAcceleration = tree.get<double>("asservissement.coeff_acceleration");
 	pid_kpA = tree.get<double>("asservissement.pid_kpa");
 	pid_kiA = tree.get<double>("asservissement.pid_kia");
 	pid_kdA = tree.get<double>("asservissement.pid_kda");
@@ -191,4 +193,8 @@ float Config::getResolution() {
 
 float Config::getDiametreRoue() {
     return diametreRoue;
+}
+
+double Config::getCoeffAcceleration() {
+    return coeffAcceleration;
 }

@@ -4,14 +4,12 @@
 
 using namespace std;
 
-Controller::Controller(MotorManager *moteurs, Odometry *codeurs, Config *conf) {
+Controller::Controller(MotorManager *p_moteurs, Odometry *codeurs, Config *conf) {
+    moteurs = p_moteurs;
+    odometry = codeurs;
+    config = conf;
+
     //Récupération des différents coef de PID configuré dans le fichier config
-    CoeffGLong =  conf->getCoeffGLong();
-    CoeffDLong =  conf->getCoeffDLong();
-
-    CoeffAnglD = conf->getCoeffAnglD();
-    CoeffAnglG = conf->getCoeffAnglG();
-
     kpA = conf->getPIDkpA();
     kiA = conf->getPIDkiA();
     kdA = conf->getPIDkdA();
@@ -24,6 +22,8 @@ Controller::Controller(MotorManager *moteurs, Odometry *codeurs, Config *conf) {
     kiPos = conf->getPIDkiPos();
     kdPos = conf->getPIDkdPos();
 
+    coeffAcceleration = conf->getCoeffAcceleration();
+
     config = conf;
 
     derapageG = false;
@@ -32,9 +32,9 @@ Controller::Controller(MotorManager *moteurs, Odometry *codeurs, Config *conf) {
     pathfindingInAction = false;
 }
 
-void Controller::initialiser(Point * pt) {
+void Controller::initialize(Point * pt) {
 
-    codeurs->setPosition(nextPoint->getX(), nextPoint->getY(), nextPoint->getTheta());
+    odometry->setPosition(pt->getX(), pt->getY(), pt->getTheta());
 
     pointActuel = pt;
 
@@ -43,14 +43,14 @@ void Controller::initialiser(Point * pt) {
 
     angle = pointActuel->getTheta();
     consigne_angle = angle;
-    cmdG = 0;
-    cmdD = 0;
+    cmdLeft = 0;
+    cmdRight = 0;
 
     moteurBloque = false;
 
     consigneG = 0;
     consigneD = 0;
-    rotationDone = false;
+    turnBeforeMoving = false;
     asservFini = true;
     asservFini = true;
     derapageG = false;
@@ -67,47 +67,33 @@ Point * Controller::getPointActuel() const{
     return pointActuel;
 }
 
-void Controller::pointSuivant(Point * point){
+void Controller::setNextPoint(Point * point){
     //Changement du point cible
 
     //Init de la pente d'acceleration en fonction du point précédent
-    if(pointActuel->getLissage() == false){//Pente activé
-        coefAccel=0.01;
 
-        //Reset des integrals des PIDs
-        somme_erreurAngle=0;
-        somme_erreurG=0;
-        somme_erreurD=0;
-        somme_erreurPosition=0;
-        somme_erreurCorrection = 0;
+    accelerationFactor=0.01;
 
-        old_erreurPosition = 0;
-        old_erreurG = 0;
-        old_erreurD = 0;
-        old_erreurAngle = 0;
-        old_erreurCorrection = 0;
+    //Reset des integrals des PIDs
+    somme_erreurAngle=0;
+    somme_erreurG=0;
+    somme_erreurD=0;
+    somme_erreurPosition=0;
+    somme_erreurCorrection = 0;
 
-    } else {
-        //Pente désactivé pour les transitions smooth
-        coefAccel=1;
-    }
+    old_erreurPosition = 0;
+    old_erreurG = 0;
+    old_erreurD = 0;
+    old_erreurAngle = 0;
+    old_erreurCorrection = 0;
 
     pointActuel = point;
 
     asservFini = false;
-    rotationDone = false;
+    turnBeforeMoving = false;
 
     derapageG = false;
     derapageD = false;
-
-    if(pointActuel->getType() == PointType::DEPLACEMENT_X){
-        yCible = y;
-    }else{
-        if(pointActuel->getType() == PointType::DEPLACEMENT_Y){
-            xCible = x;
-        }
-    }
-
 }
 
 void Controller::calculConsigne(){
@@ -142,41 +128,48 @@ void Controller::calculConsigne(){
         default: break; //Recalage
     }
 
-    //Calcul la distance entre le robot et le point cible
-    consigne_distance = sqrt((xCible-x)*(xCible-x)+(yCible-y)*(yCible-y));
+    double dx = xCible - x;
+    double dy = yCible - y;
 
-    if(pointActuel->getType() != PointType::ANGLE && pointActuel->getType() != PointType::ANGLE_RELATIF){// Point de Translation
+    //Calcul la distance entre le robot et le point cible
+    consigne_distance = sqrt(dx * dx + dy * dy);
+
+    // Point de Translation
+    if(pointActuel->getType() != PointType::ANGLE && pointActuel->getType() != PointType::ANGLE_RELATIF){
         //Calcul de l'angle entre la position du robot et la cible
         if(pointActuel->getDirection() == "avant"){//Marche avant
-            consigne_angle =atan2((xCible-x),(yCible-y))*180/M_PI;
+            consigne_angle = atan2(dx, dy) * 180/M_PI;
         }else{//Marche arrière
-            consigne_angle =atan2((xCible-x),(yCible-y))*180/M_PI-180;
+            consigne_angle = atan2(dx, dy) * 180/M_PI - 180;
         }
 
         //Si la consigne d'angle est supérieur à 180° on tourne dans l'autre sens
         if (consigne_angle > 180){
-            consigne_angle = consigne_angle-360;
+            consigne_angle = consigne_angle - 360;
         }
         if(consigne_angle <= -180){
-            consigne_angle = consigne_angle +360;
+            consigne_angle = consigne_angle + 360;
         }
     }
+
     //Si l'erreur d'angle est supérieur à 180° on tourne dans l'autre sens
-    erreurAngle = consigne_angle-angle;
+    erreurAngle = consigne_angle - angle;
     if (erreurAngle > 180){
         erreurAngle = erreurAngle-360;
     }
     if(erreurAngle <= -180){
         erreurAngle = erreurAngle +360;
     }
+
     cout << "xCible : "<< xCible << " yCible : "<< yCible << endl;
 }
 
-void Controller::asservir(){
+void Controller::update(){
     cout << endl;
+
     //Mise à jour de la position et de la vitesse du robot
     cout << "Vitesse consigne :" << pointActuel->getSpeed()<<endl;
-    odometry->update();
+
     x = odometry->getX();
     y = odometry->getY();
     angle = odometry->getTheta();
@@ -204,10 +197,13 @@ void Controller::asservir(){
 
 void Controller::Deplacement(){
     cout << "### Point translation erreurAngle: "<<erreurAngle<<" distance : "<< consigne_distance<<endl;
-    if(pointActuel->getCoefCourbe()!=0){//Courbe activé : désactive la rotation avant le déplacement
-        rotationDone=true;
-        if(pointActuel->getCoefCourbe()!=1){ //Coefficient p donné par le point
-            kpDep=pointActuel->getCoefCourbe();
+
+    // Récupération du coefficient de déplacement
+
+    if(pointActuel->getKpCurve() != 0) {//Courbe activé : désactive la rotation avant le déplacement
+        turnBeforeMoving = false;
+        if(pointActuel->getKpCurve() != 1){ //Coefficient p donné par le point
+            kpDep = pointActuel->getKpCurve();
         }else{//Coefficient p par défaut
             kpDep = config->getPIDkpDep();
         }
@@ -221,91 +217,82 @@ void Controller::Deplacement(){
         kpDep = config->getPIDkpDep();
     }
 
-    if(rotationDone == false){//Si la rotation n'est pas terminée
-        //Rotation avant d'avancer
-        if(abs(erreurAngle) > pointActuel->getDeltaAngle()){//Erreur d'angle toléré
+    if(turnBeforeMoving) {
+        // If we are over the angle threshold
+        if(abs(erreurAngle) > pointActuel->getDeltaAngle()) {
             cout<<"### Rotation de "<<consigne_angle << " ###"<<endl;
 
-            //Calcul des commandes moteurs pour la rotation (cmdG, cmdD);
-            asservAngle(pointActuel->getSpeed());/////////////////////////////////////////////////////avant c'etait asservAngle(500)
+            //Calcul des commandes moteurs pour la rotation (cmdLeft, cmdRight);
+            asservAngle(pointActuel->getSpeed());
 
             //Calcul de la pente d'acceleration
-            if( coefAccel <1){
-                coefAccel += 0.06;
-                if(coefAccel>1){
-                    coefAccel=1;
-                }
-            }else{
-                coefAccel = 1;
+            if(accelerationFactor < 1) {
+                accelerationFactor += 0.06;
+            } else {
+                accelerationFactor = 1;
             }
-            //Envoie de la consigne a l'asservissement de vitesse
-            asservVitesse(consigneG*coefAccel,consigneD*coefAccel);
 
-        }else{//Angle atteint
-            rotationDone = true;
-            coefAccel=0.01;
+            //Envoie de la consigne a l'asservissement de vitesse
+            asservVitesse(consigneG * accelerationFactor, consigneD * accelerationFactor);
+        } else {
+            // Targeted angle reached
+            turnBeforeMoving = false;
+
+            // Reset the acceleration
+            accelerationFactor = 0.01;
         }
-    }else{ //translation
+    } else { //translation
         cout<<"### Translation de "<< consigne_distance <<" mm ###"<<endl;
 
-        if(pointActuel->getDerapage()== false){
+        if(pointActuel->getSmoothCurve()){
             //modification de consigneG et consigneD en fonction de l'erreur d'angle lors de la translation
             correctionAngle();
-        }else{//On désactive la correction d'angle lors de la détection de dérapage
-            consigneG=1;
-            consigneD=1;
+        } else{//On désactive la correction d'angle lors de la détection de dérapage
+            consigneG = 1;
+            consigneD = 1;
         }
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //Chelou ? par rapport au if/else juste au dessus
-        correctionAngle();
-        cout <<"Correction d'angle : "<< consigneG <<", "<<consigneD<<endl;
 
-
-        if(pointActuel->getLissage() == 0){//Ralenti à l'approche du point
+        if(pointActuel->getLissage() == 0) {//Ralenti à l'approche du point
             //Calcul de la consigneVitesse
             asservPosition();
 
-        }else{//Transition smooth entre les points
+        } else {//Transition smooth entre les points
             consigneVitesse = pointActuel->getSpeed();
         }
 
         //Calcul de la pente d'acceleration
-        if( coefAccel <1){
-            coefAccel += 0.05;
-            if(coefAccel>1){
-                coefAccel=1;
-            }
-        }else{
-            coefAccel = 1;
+        if(accelerationFactor < 1) {
+            accelerationFactor += coeffAcceleration;
+        } else {
+            accelerationFactor = 1;
         }
 
-        cout << "CoefAccel: "<<coefAccel<<" consigneVitesse: "<<consigneVitesse <<endl;
-        if(pointActuel->getDirection() == "avant" || rotationDone==false){
+        cout << "CoefAccel: " << accelerationFactor << " consigneVitesse: " << consigneVitesse << endl;
+        if(pointActuel->getDirection() == "avant" || turnBeforeMoving == false){
             //vitesse demandé+ consigneG(erreur angle)
-            //Convertie la vitesse souhaité en commande moteur : cmdG et cmdD;
-            asservVitesse(coefAccel*(consigneVitesse+consigneG), coefAccel*(consigneVitesse+consigneD));
+            //Convertie la vitesse souhaité en commande moteur : cmdLeft et cmdRight;
+            asservVitesse(accelerationFactor * (consigneVitesse + consigneG), accelerationFactor * (consigneVitesse + consigneD));
 
         }else{//Marche arrière
-            //Convertie la vitesse souhaité en commande moteur : cmdG et cmdD;
-            asservVitesse(-coefAccel*(consigneVitesse+consigneG), -coefAccel*(consigneVitesse+consigneD));
-
+            //Convertie la vitesse souhaité en commande moteur : cmdLeft et cmdRight;
+            asservVitesse(-accelerationFactor * (consigneVitesse + consigneG), -accelerationFactor * (consigneVitesse + consigneD));
         }
 
-
-        if(consigne_distance < pointActuel->getDeltaDeplacement()){//Si le robot est arrivé au point cible
+        if(consigne_distance < pointActuel->getDistanceThreshold()){//Si le robot est arrivé au point cible
             if(pointActuel->getLissage()==0){//Freine à l'arrivé
                 cout <<"STOP" << endl;
-                cmdG = 0;
-                cmdD = 0;
-                coefAccel=0.01;
+                cmdLeft = 0;
+                cmdRight = 0;
+                accelerationFactor=0.01;
             }
             asservFini = true;
             somme_erreurCorrection=0;
         }
     }
-    //Envoie des commandes aux moteurs
-    cout <<"CMD :" << cmdG << " "<<cmdD << endl;
-    moteurs->setOrder(cmdG, cmdD);
+
+    // Send the commands to the motors
+    cout << "CMD :" << cmdLeft << " " << cmdRight << endl;
+    moteurs->setOrder(cmdLeft, cmdRight);
 }
 
 void Controller::Angle(){
@@ -313,28 +300,28 @@ void Controller::Angle(){
     cout<<"### Rotation de "<<erreurAngle << " ###"<<endl;
     asservAngle(pointActuel->getSpeed());
     //Calcul de la pente d'acceleration
-    if( coefAccel <1){
-        coefAccel += 0.06;
-        if(coefAccel>1){
-            coefAccel=1;
+    if(accelerationFactor < 1){
+        accelerationFactor += 0.06;
+        if(accelerationFactor > 1){
+            accelerationFactor=1;
         }
     }else{
-        coefAccel = 1;
+        accelerationFactor = 1;
     }
-    cout<<"CoeffAccel : "<<coefAccel<<endl;
+    cout << "CoeffAccel : " << accelerationFactor << endl;
     //Envoie de la consigne a l'asservissement de vitesse
-    //cmdG = consigneG;
-    //cmdD = consigneD;
-    asservVitesse(consigneG*coefAccel,consigneD*coefAccel);
+    //cmdLeft = consigneG;
+    //cmdRight = consigneD;
+    asservVitesse(consigneG * accelerationFactor, consigneD * accelerationFactor);
 
     if(abs(erreurAngle)>pointActuel->getDeltaAngle()){//Erreur d'angle toléré
-        cout <<"CMD :" << cmdG << " "<<cmdD << endl;
-        moteurs->setOrder(cmdG, cmdD);
+        cout << "CMD :" << cmdLeft << " " << cmdRight << endl;
+        moteurs->setOrder(cmdLeft, cmdRight);
     }else{//Angle atteint
         cout <<"STOP"<<endl;
         moteurs->stop();
         asservFini = true;
-        coefAccel=0.01;
+        accelerationFactor=0.01;
     }
 }
 
@@ -343,7 +330,7 @@ void Controller::Position(){
     xCible = pointActuel->getX();
     yCible = pointActuel->getY();
 
-    if(consigne_distance > pointActuel->getDeltaDeplacement()){ //Deplacement
+    if(consigne_distance > pointActuel->getDistanceThreshold()){ //Deplacement
         if(abs(consigne_angle)>90){
             if(pointActuel->getDirection() == "avant"){
                 pointActuel->setDirection("arriere");
@@ -463,27 +450,27 @@ void Controller::asservVitesse(double vitConsigneG, double vitConsigneD){
     double PID_D = kpD*erreurD + kiD*somme_erreurD + kdD*dErreurD;
 
     //cout <<"PID_G :"<< PID_G <<" PID_D :"<< PID_D << endl;
-    cmdG = PID_G;
-    cmdD = PID_D;
+    cmdLeft = PID_G;
+    cmdRight = PID_D;
 /*
-	if(pointActuel.getDerapage()== true){//détection de dérapage
-		cout <<"Wait Burn, Gauche : "<< abs(cmdG) <<" vitG: "<<abs(vitG)<<" ,Droite: "<< abs(cmdD)<<" vitD: "<<abs(vitD)<<endl;
-		if(abs(cmdG)>=50 && abs(vitG)<5){
-			cmdG=0;
+	if(pointActuel.getSmoothCurve()== true){//détection de dérapage
+		cout <<"Wait Burn, Gauche : "<< abs(cmdLeft) <<" vitG: "<<abs(vitG)<<" ,Droite: "<< abs(cmdRight)<<" vitD: "<<abs(vitD)<<endl;
+		if(abs(cmdLeft)>=50 && abs(vitG)<5){
+			cmdLeft=0;
 			cout<<"Dérapage Gauche"<<endl;
 		}
 
-		if(abs(cmdD)>=50 && abs(vitD)<5){
-			cmdD=0;
+		if(abs(cmdRight)>=50 && abs(vitD)<5){
+			cmdRight=0;
 			cout<<"Dérapage Droite"<<endl;
 		}
 
-		if(cmdG==0 && cmdD==0){//Dérapage des deux cotés, on est contre la bordure, prêt pour le recalage
+		if(cmdLeft==0 && cmdRight==0){//Dérapage des deux cotés, on est contre la bordure, prêt pour le recalage
 			asservFini = true;
 		}
 	}else{
 		cout<< "PID vit "<< PID_G <<" "<< PID_D<<endl;
-		if((abs(cmdG) >= 150 && abs(vitG)<=5) || (abs(cmdD)>= 150 && abs(vitD)<=5)){
+		if((abs(cmdLeft) >= 150 && abs(vitG)<=5) || (abs(cmdRight)>= 150 && abs(vitD)<=5)){
 			//Dérapage imprévu
 			cout<< "\t ####### Robot bloqué #######"<<endl;
 			//moteurBloque = true;
@@ -494,16 +481,16 @@ void Controller::asservVitesse(double vitConsigneG, double vitConsigneD){
 		}
 	}*/
 
-    if(pointActuel->getDerapage()== true){//détection de dérapage
-        cout <<"Wait Burn, Gauche : "<< abs(cmdG) <<" vitG: "<<abs(vitG)<<" ,Droite: "<< abs(cmdD)<<" vitD: "<<abs(vitD)<<endl;
-        if(abs(cmdG)>=50 && abs(vitG)<5){
-            cmdG = 0;
+    if(pointActuel->getSmoothCurve() == true){//détection de dérapage
+        cout << "Wait Burn, Gauche : " << abs(cmdLeft) << " vitG: " << abs(vitG) << " ,Droite: " << abs(cmdRight) << " vitD: " << abs(vitD) << endl;
+        if(abs(cmdLeft) >= 50 && abs(vitG) < 5){
+            cmdLeft = 0;
             derapageG = true;
             cout << "Dérapage Gauche" << endl;
         }
 
-        if(abs(cmdD)>=50 && abs(vitD)<5){
-            cmdD = 0;
+        if(abs(cmdRight) >= 50 && abs(vitD) < 5){
+            cmdRight = 0;
             derapageD = true;
             cout << "Dérapage Droite" << endl;
         }
@@ -513,12 +500,12 @@ void Controller::asservVitesse(double vitConsigneG, double vitConsigneD){
         }
     }else{
         cout<< "PID vit "<< PID_G <<" "<< PID_D<<endl;
-        if((abs(cmdG) >= 85 && abs(vitG)<=5) || (abs(cmdD)>= 85 && abs(vitD)<=5) ){
+        if((abs(cmdLeft) >= 85 && abs(vitG) <= 5) || (abs(cmdRight) >= 85 && abs(vitD) <= 5) ){
             //Dérapage imprévu
             cout<< "\t ####### Robot bloqué #######"<<endl;
             moteurBloque = true;
             moteurs->stop();
-            pointSuivant(pointActuel);
+            setNextPoint(pointActuel);
             //exit(3);
         }else{
             moteurBloque = false;
@@ -526,18 +513,18 @@ void Controller::asservVitesse(double vitConsigneG, double vitConsigneD){
     }
 
     //Vérification des limites de commandes moteurs
-    if(cmdG > 255){
-        cmdG = 255;
+    if(cmdLeft > 255){
+        cmdLeft = 255;
     }
-    if(cmdG < -255){
-        cmdG = -255;
+    if(cmdLeft < -255){
+        cmdLeft = -255;
     }
 
-    if(cmdD > 255){
-        cmdD = 255;
+    if(cmdRight > 255){
+        cmdRight = 255;
     }
-    if(cmdD < -255){
-        cmdD = -255;
+    if(cmdRight < -255){
+        cmdRight = -255;
     }
 }
 void Controller::asservAngle(double vit){
@@ -619,12 +606,12 @@ void Controller::RecalageXY() {
     angle = pointActuel->getTheta();
 
     consigne_angle = angle;
-    cmdG = 0;
-    cmdD = 0;
+    cmdLeft = 0;
+    cmdRight = 0;
 
     consigneG = 0;
     consigneD = 0;
-    rotationDone = false;
+    turnBeforeMoving = false;
     asservFini = true;
 }
 
@@ -638,12 +625,12 @@ void Controller::RecalageX() {
     angle = pointActuel->getTheta();
 
     consigne_angle = angle;
-    cmdG = 0;
-    cmdD = 0;
+    cmdLeft = 0;
+    cmdRight = 0;
 
     consigneG = 0;
     consigneD = 0;
-    rotationDone = false;
+    turnBeforeMoving = false;
     asservFini = true;
 }
 
@@ -658,12 +645,12 @@ void Controller::RecalageY() {
     angle = pointActuel->getTheta();
 
     consigne_angle = angle;
-    cmdG = 0;
-    cmdD = 0;
+    cmdLeft = 0;
+    cmdRight = 0;
 
     consigneG = 0;
     consigneD = 0;
-    rotationDone = false;
+    turnBeforeMoving = false;
     asservFini = true;
 }
 

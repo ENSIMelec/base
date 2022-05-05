@@ -21,7 +21,7 @@ class Controller
 {
 public:
     // Méthodes
-    void initialiser(Point * pt);
+    void initialize(Point * pt);
 
     /// @brief Constructeur par défaut de l’asservissement
     ///
@@ -30,10 +30,10 @@ public:
     /// @param st instance de la classe Strategie
     Controller(MotorManager *moteurs, Odometry *codeurs, Config *conf);
 
-    void asservir();
+    void update();
 
     Point * getPointActuel() const;
-    void pointSuivant(Point * point);
+    void setNextPoint(Point * point);
     void stop();
 
     bool demandePointSuivant();
@@ -65,14 +65,12 @@ private:
     void asservAngle(double vit);
     void correctionAngle();
 
-
-
     Config * config;
     timer * temps;
 
     // Moteurs
     MotorManager * moteurs;
-    int cmdG = 0, cmdD = 0;
+    int cmdLeft = 0, cmdRight = 0;
     // Codeurs
     Odometry * odometry;
 
@@ -91,27 +89,16 @@ private:
     double erreurAngle=0;
     double consigne_distance{}, consigne_angle{};
 
-    bool rotationDone{};
+    bool turnBeforeMoving = false;
 
     bool moteurBloque{};
 
 
     //Fin d'asservissement
     bool asservFini = false;
-    double coefAccel = 0.5;
+    double accelerationFactor = 0.01;
     double ditanceAParcourir{};
     double pourcentageDistance{};
-
-    //Coefficient tick codeur  -> distance
-    double CoeffGLong{};
-    double CoeffDLong{};
-
-    double CoeffAnglD{}, CoeffAnglG{};
-
-
-    double mesure_dist{}, mesure_angle{}, mesure_vitesse{};
-    int tempsLast{};
-
 
     //Coefs PID en angle
     double kpA{}, kiA{}, kdA{};
@@ -144,9 +131,6 @@ private:
     double somme_erreurPosition = 0;
     double consigneVitesse{};
 
-    double ticksG=0;
-    double  ticksD=0;
-
     // Détection dérapage
     bool derapageG{};
     bool derapageD{};
@@ -154,6 +138,7 @@ private:
     //
     bool pathfindingInAction{};
 
+    double coeffAcceleration;
 };
 
 #endif //ASSERVISSEMENT2018_H_INCLUDED

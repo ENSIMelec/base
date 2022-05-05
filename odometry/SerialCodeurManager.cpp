@@ -17,6 +17,7 @@ SerialCodeurManager::SerialCodeurManager()
         string port = "/dev/ttyUSB" + to_string(i);
         if((encoders_fd = serialOpen(port.c_str(), 115200)) > 0) {
             initSuccess = true;
+            cout << endl << "\tConnected to /dev/ttyUSB" << i << ", ";
             break;
         };
     }

@@ -107,12 +107,18 @@ int StrategyParser::parseObjectivePoints(const string& path, const string& objFi
                         point->setTheta(MathUtils::deg2rad(value));
                     } else if(key == "action") {
                         point->setAction(value);
+                    } else if(key == "smooth_curve") {
+                        point->setSmoothCurve(value);
                     } else if(key == "attAction") {
-                        point->setActionWaiting(true);
+                        point->setActionAfterMovement(true);
+                    } else if(key == "distance_threshold") {
+                        point->setDistanceThreshold(value);
                     } else if(key == "blocage") {
                         point->setBlocage(value);
                     } else if(key == "commentaire") {
                         point->setCommentary(value);
+                    } else if(key == "kP_curve") {
+                        point->setKpCurve(value);
                     } else if(key == "type") {
                         if(value == "Position") {
                             point->setType(PointType::POSITION);
