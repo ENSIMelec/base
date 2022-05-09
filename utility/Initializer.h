@@ -6,21 +6,23 @@
 #define KRABBS_INITIALIZE_H
 
 #include <string>
-#include "Config.h"
 #include "../controller/MotorManager.h"
 #include "../controller/Controller.h"
 #include "../actuators/ActionManager.h"
+#include "../odometry/Odometry.h"
+#include "Configuration.h"
+#include <thread>
 
 using namespace std;
 const string RESOURCES_PATH = "/home/pi/Documents/Krabbs/res/";
 
 class Initializer {
 public:
-    static Config * start(bool log = true);
+    static Configuration * start(bool log = true);
     static void end();
 
     // ----- Getters -----
-    static Config * getConfiguration() {return configuration;}
+    static Configuration * getConfiguration() {return configuration;}
     static Controller * getController() {return controller;}
     static Odometry * getOdometry() {return odometry;}
     static ActionManager * getActionManager() {return actionManager;}
@@ -29,11 +31,13 @@ public:
 private:
     inline static bool allowLogging;
 
-    inline static Config *configuration = nullptr;
+    inline static Configuration *configuration = nullptr;
     inline static MotorManager *motorManager = nullptr;
     inline static Odometry *odometry = nullptr;
     inline static Controller *controller = nullptr;
     inline static ActionManager *actionManager = nullptr;
+
+    inline static thread * lidarThread;
 
     inline static int motor_fd;
     inline static int servos_fd;
@@ -43,6 +47,7 @@ private:
     static void initController();
     static void initOdometry();
     static void initActionManager();
+    static void initLidar();
 };
 
 #endif //KRABBS_INITIALIZE_H

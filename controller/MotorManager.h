@@ -9,7 +9,7 @@
 /* The max speed must be between 0 and 255
  * Be careful when using values over 100
  */
- #define MAX_SPEED 75
+ #define MAX_SPEED 100
 
 class MotorManager
 {

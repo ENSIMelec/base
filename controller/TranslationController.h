@@ -10,17 +10,17 @@
 
 class TranslationController {
 public:
-    TranslationController();
+    TranslationController() = default;
 
-    void update(Position p_currentPosition);
+    void update(double x, double y, double theta);
 
     int getLeftCommand() {return leftCommand;}
     int getRightCommand() {return rightCommand;}
 
-    double calculateAngleError();
-    double calculateDistanceError();
+    double calculateAngleError() const;
+    double calculateDistanceError() const;
 
-    bool isTargetReached();
+    bool isTargetReached() const;
     void setTargetXY(double x, double y);
 
 private:
@@ -31,9 +31,9 @@ private:
     double Pk_angle = 200;
     double Pk_distance = 1;
 
-    // Target position
-    Position targetPosition;
-    Position currentPosition;
+    // Target location
+    Location targetPosition;
+    Location currentPosition;
 };
 
 

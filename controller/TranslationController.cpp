@@ -5,9 +5,11 @@
 #include "../utility/MathUtils.h"
 #include "TranslationController.h"
 
-void TranslationController::update(Position p_currentPosition) {
+void TranslationController::update(double x, double y, double theta) {
 
-    currentPosition = p_currentPosition;
+    currentPosition.x = x;
+    currentPosition.y = y;
+    currentPosition.theta = theta;
 
     double distance = calculateDistanceError() * Pk_distance;
     double distanceCommand = MathUtils::constrain(distance, 0.0, 100.0);
@@ -18,6 +20,10 @@ void TranslationController::update(Position p_currentPosition) {
     // Apply commands
     leftCommand = (int) (distanceCommand - angleCommand);
     rightCommand = (int) (distanceCommand + angleCommand);
+
+    cout << "TRANSLATION:: " << "distanceCommand: " << distanceCommand << endl;
+    cout << "TRANSLATION:: " << "angleCommand : " << angleCommand << endl;
+    cout << "TRANSLATION:: " << "leftCommand : " << leftCommand << "\trightCommand : " << rightCommand << endl;
 }
 
 void TranslationController::setTargetXY(double x, double y) {
@@ -25,13 +31,13 @@ void TranslationController::setTargetXY(double x, double y) {
     targetPosition.y = y;
 }
 
-bool TranslationController::isTargetReached() {
-    // Get the distance between actual position and target
+bool TranslationController::isTargetReached() const {
+    // Get the distance between actual location and target
     double distance = calculateDistanceError();
     return distance < DISTANCE_THRESHOLD;
 }
 
-double TranslationController::calculateAngleError() {
+double TranslationController::calculateAngleError() const {
 
     // Calculate the angle error
     double dX = targetPosition.x - currentPosition.x;
@@ -52,9 +58,9 @@ double TranslationController::calculateAngleError() {
 }
 
 /**
- * Get the distance between the current position and target
+ * Get the distance between the current location and target
  */
-double TranslationController::calculateDistanceError() {
+double TranslationController::calculateDistanceError() const {
     double dX = currentPosition.x - targetPosition.x;
     double dY = currentPosition.y - targetPosition.y;
 

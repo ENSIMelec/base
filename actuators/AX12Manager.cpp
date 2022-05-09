@@ -117,7 +117,7 @@ int AX12Manager::AX12Action(int numActionneur, int angleAction, int forceAction)
 
 	int dxl_comm_result = COMM_TX_FAIL;
 	uint8_t dxl_error = 0;                          // Dynamixel error
-	//uint16_t dxl_present_position = 0;              // Present position
+	//uint16_t dxl_present_position = 0;              // Present location
 /*
 	//Speed
 	if(speed != 0)
@@ -147,7 +147,7 @@ int AX12Manager::AX12Action(int numActionneur, int angleAction, int forceAction)
 	}
 
 	temps.restart();
-    // Write goal position
+    // Write goal location
 	dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, numActionneur, ADDR_AX_GOAL_POSITION, dxl_goal_position, &dxl_error);
     if (dxl_comm_result != COMM_SUCCESS)
     {
@@ -161,7 +161,7 @@ int AX12Manager::AX12Action(int numActionneur, int angleAction, int forceAction)
     }
     /* //Pas si utile que ça ... Il faudrait plutot faire une boucle "tant qu'on a pas une charge correspondant à la prise de cube dans les pinces ..."
     do {
-		// Read present position
+		// Read present location
 		dxl_comm_result = packetHandler->read2ByteTxRx(portHandler, DXL_ID, ADDR_MX_PRESENT_POSITION, &dxl_present_position, &dxl_error);
 		if (dxl_comm_result != COMM_SUCCESS)
 		{
@@ -177,7 +177,7 @@ int AX12Manager::AX12Action(int numActionneur, int angleAction, int forceAction)
 	} while(abs(dxl_goal_position - dxl_present_position) > DXL_MOVING_STATUS_THRESHOLD && (timeOut == 0 || temps.elapsed_ms() < timeOut));
 	*/
 	/*
-	During while() loop, the controller writes and reads the Dynamixel position through packet transmission/reception(Tx/Rx).
+	During while() loop, the controller writes and reads the Dynamixel location through packet transmission/reception(Tx/Rx).
 
 	To continue its rotation, press any key except ESC.
 
@@ -189,7 +189,7 @@ int AX12Manager::AX12Action(int numActionneur, int angleAction, int forceAction)
 	requesting 2 bytes of value of ADDR_MX_PRESENT_POSITION address. Then, it receives dxl_present_position and dxl_error.
 	The function returns 0 if no communication error has been occurred.
 
-	Reading its present position will be ended when absolute value of (dxl_goal_position[index] - dxl_present_position) becomes smaller then DXL_MOVING_STATUS_THRESHOLD.
+	Reading its present location will be ended when absolute value of (dxl_goal_position[index] - dxl_present_position) becomes smaller then DXL_MOVING_STATUS_THRESHOLD.
 
 	At last, it changes its direction to the counter-wise and waits for extra key input.
 	*/

@@ -18,7 +18,7 @@
 
 #define CMD_RESET -3
 
-class SerialCodeurManager
+class SerialCoderManager
 {
 public:
 
@@ -26,7 +26,7 @@ public:
     int getLeftTicks();
     int getTime();
 
-	SerialCodeurManager();
+	SerialCoderManager();
 
 	void readAndReset();
 	void reset();

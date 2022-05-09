@@ -120,12 +120,12 @@ int StrategyParser::parseObjectivePoints(const string& path, const string& objFi
                     } else if(key == "kP_curve") {
                         point->setKpCurve(value);
                     } else if(key == "type") {
-                        if(value == "Position") {
+                        if(value == "Location") {
                             point->setType(PointType::POSITION);
                         } else if(value == "AngleRelatif") {
                             point->setType(PointType::ANGLE_RELATIF);
-                        } else if(value == "Deplacement") {
-                            point->setType(PointType::DEPLACEMENT);
+                        } else if(value == "MoveToPosition") {
+                            point->setType(PointType::MOVE_TO_POSITION);
                         } else if(value == "DeplacementX") {
                             point->setType(PointType::DEPLACEMENT_X);
                         } else if(value == "DeplacementY") {

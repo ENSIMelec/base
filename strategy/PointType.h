@@ -15,7 +15,8 @@ enum PointType {
     DEPLA_RELATIF,
     RECALAGE_X,
     RECALAGE_Y,
-    RECALAGE_XY
+    RECALAGE_XY,
+    MOVE_TO_POSITION
 };
 
 #endif //KRABBS_POINT_TYPE_H

@@ -1,144 +1,94 @@
-#ifndef ASSERVISSEMENT2018_H_INCLUDED
-#define ASSERVISSEMENT2018_H_INCLUDED
+//
+// Created by Taoufik on 12/11/2019.
+//
 
-#include <iostream>
-#include <cmath>
-#include <cstdint>
-#include <netdb.h>
-#include <stdio.h>
-#include <string>
-#include <thread>
-#include <vector>
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
 
-#include "../utility/Clock.h"
-#include "../utility/Config.h"
-#include "../odometry/Odometry.h"
+#include "PID.h"
 #include "MotorManager.h"
+#include "../utility/MathUtils.h"
+#include "../utility/Configuration.h"
+#include "../odometry/Odometry.h"
 #include "../strategy/Point.h"
+#include "MovementController.h"
 
-/// @brief Classe permettant de gérer toute la partie d’asservissement
-class Controller
-{
+class Controller {
+
+#define DISTANCE_THRESHOLD 5    // Distance in millimeters
+
 public:
-    // Méthodes
-    void initialize(Point * pt);
-
-    /// @brief Constructeur par défaut de l’asservissement
-    ///
-    /// @param moteurs Les deux moteurs à gérer
-    /// @param codeurs Les deux codeurs à lire
-    /// @param st instance de la classe Strategie
-    Controller(MotorManager *moteurs, Odometry *codeurs, Config *conf);
+    /**
+     * Initialisation de l'asservisement
+     * @param codeurs
+     * @param motor
+     * @param config
+    */
+    Controller(MotorManager * motorManager_, Odometry * odometry_, Configuration * config_);
 
     void update();
 
-    Point * getPointActuel() const;
-    void setNextPoint(Point * point);
-    void stop();
+    void setTargetXY(int x, int y);
+    void setTargetAngle(double angle);
 
-    bool demandePointSuivant();
+    void stopMotors();
+    bool isTargetReached();
 
-    bool blocageMoteur();
-    void setMoteur(double vitG, double vitD);
+    void setTargetPoint(Point* point);
 
-    Point * getCoordonnees();
+    void debug();
 
-    void setVitessePointActuel(int);
-    void PositionAbs(int, int, int*, int*);
-
-    void setPathfindingInAction(bool);
-    bool getPathfindingInAction();
+    void setNextPoint(Point *point);
 
 private:
 
-    void calculConsigne();
+    enum TrajectoryType {
+        XY,
+        ANGLE,
+        NONE
+    };
+    TrajectoryType currentTrajectoryType = NONE;
 
-    void Deplacement();
-    void Angle();
-    void Position();
-    void RecalageXY();
-    void RecalageX();
-    void RecalageY();
+    // Correctors
+    double Pk_angle = 1;
+    double Pk_distance = 1;
 
-    void asservVitesse(double vitConsigneG, double vitConsigneD);
-    void asservPosition();
-    void asservAngle(double vit);
-    void correctionAngle();
+    // Target location
+    Location targetPosition;
 
-    Config * config;
-    timer * temps;
-
-    // Moteurs
-    MotorManager * moteurs;
-    int cmdLeft = 0, cmdRight = 0;
-    // Codeurs
     Odometry * odometry;
+    MotorManager * motorManager;
+    Configuration * config;
 
-    //Point à atteindre
-    Point * pointActuel;
+    double calculateAngleError();
+    double calculateDistanceError();
 
-    //Coordonnées actuelles
-    double x{}, y{};
-    double angle{};
+    struct {
+        double angle = 0;
+        double distance = 0;
+    } command;
 
-    //Point cible
-    double xCible{};
-    double yCible{};
+    struct {
+        int left = 0;
+        int right = 0;
+    } pwm;
 
-    //Calcul consigne
-    double erreurAngle=0;
-    double consigne_distance{}, consigne_angle{};
+    Point * currentPoint;
 
-    bool turnBeforeMoving = false;
+    double accelerationFactor = 0;
+    double accelerationCoeff;
 
-    bool moteurBloque{};
+    void calculateAngleCommands();
 
+    bool angleIsCorrect = false;
+    double targetAngle = 0;
 
-    //Fin d'asservissement
-    bool asservFini = false;
-    double accelerationFactor = 0.01;
-    double ditanceAParcourir{};
-    double pourcentageDistance{};
+    void calculateDistanceCommands();
+    void correctAngle();
 
-    //Coefs PID en angle
-    double kpA{}, kiA{}, kdA{};
-    //Coefs PID en angle en déplacement
-    double kpDep{}, kiDep{}, kdDep{}, kpDepPathfinding{};
-    //Coefs PID en position
-    double kpPos{}, kiPos{}, kdPos{};
+    MovementController * movementController;
 
-
-    //Asserv en vitesse
-    double old_erreurG = 0, old_erreurD = 0;
-    double somme_erreurG = 0, somme_erreurD = 0;
-    double dErreurG{}, dErreurD{};
-    double vitG{}, vitD{};
-    double 	nbVitG=0, nbVitD=0;
-
-    //Asserv en angle
-    double old_erreurAngle = 0;
-    double somme_erreurAngle = 0;
-    double consigneG =0 , consigneD = 0;
-
-    //Correction d'angle
-    double erreurCorrection=0;
-    double old_erreurCorrection= 0;
-    double somme_erreurCorrection = 0;
-
-
-    //Asserv en position
-    double old_erreurPosition = 0;
-    double somme_erreurPosition = 0;
-    double consigneVitesse{};
-
-    // Détection dérapage
-    bool derapageG{};
-    bool derapageD{};
-
-    //
-    bool pathfindingInAction{};
-
-    double coeffAcceleration;
 };
 
-#endif //ASSERVISSEMENT2018_H_INCLUDED
+
+#endif //CONTROLLER_H

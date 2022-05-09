@@ -17,7 +17,7 @@ int ServoManager::servoInitialisation() {
 	{
 		pca9685PWMReset(i2c_servo); // Init des servoManager à 0°
 
-		/*ICI pour initialize les servomoteurs à une certaine position*/
+		/*ICI pour initialize les servomoteurs à une certaine location*/
 		pwmWrite(PIN_BASE + 14, angleToTicks(0));	//Droite
 		pwmWrite(PIN_BASE + 15, angleToTicks(150));	//Gauche
 
