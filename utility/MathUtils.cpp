@@ -23,15 +23,15 @@ float MathUtils::periodicmod(float x, float y) {
     return fmod(fmod(x, y) + y, y);
 }
 
-float MathUtils::deg2rad(float deg) {
+float MathUtils::deg2rad(double deg) {
     return deg * (M_PI / 180);
 }
-float MathUtils::rad2deg(float rad) {
+float MathUtils::rad2deg(double rad) {
     return rad * (180 / M_PI);
 }
-float MathUtils::micros2sec(float sec) {
+float MathUtils::micros2sec(double sec) {
     return sec * 0.000001;
 }
-float MathUtils::millis2sec(float millis) {
+float MathUtils::millis2sec(double millis) {
     return millis * 0.001;
 }

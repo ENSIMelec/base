@@ -7,8 +7,8 @@
 #include <iostream>
 #include <fstream>
 
-#include "lib/json.hpp"
-#include "MathUtils.h"
+#include "../lib/json.hpp"
+#include "../utility/MathUtils.h"
 
 using json = nlohmann::json;
 
@@ -107,14 +107,38 @@ int StrategyParser::parseObjectivePoints(const string& path, const string& objFi
                         point->setTheta(MathUtils::deg2rad(value));
                     } else if(key == "action") {
                         point->setAction(value);
+                    } else if(key == "smooth_curve") {
+                        point->setSmoothCurve(value);
                     } else if(key == "attAction") {
-                        point->setActionWaiting(true);
+                        point->setActionAfterMovement(true);
+                    } else if(key == "distance_threshold") {
+                        point->setDistanceThreshold(value);
                     } else if(key == "blocage") {
                         point->setBlocage(value);
                     } else if(key == "commentaire") {
                         point->setCommentary(value);
+                    } else if(key == "kP_curve") {
+                        point->setKpCurve(value);
                     } else if(key == "type") {
-                        point->setType(value);
+                        if(value == "Location") {
+                            point->setType(PointType::POSITION);
+                        } else if(value == "AngleRelatif") {
+                            point->setType(PointType::ANGLE_RELATIF);
+                        } else if(value == "MoveToPosition") {
+                            point->setType(PointType::MOVE_TO_POSITION);
+                        } else if(value == "DeplacementX") {
+                            point->setType(PointType::DEPLACEMENT_X);
+                        } else if(value == "DeplacementY") {
+                            point->setType(PointType::DEPLACEMENT_Y);
+                        } else if(value == "DeplaRelatif") {
+                            point->setType(PointType::DEPLA_RELATIF);
+                        } else if(value == "RecalageX") {
+                            point->setType(PointType::RECALAGE_X);
+                        } else if(value == "RecalageY") {
+                            point->setType(PointType::RECALAGE_Y);
+                        } else if(value == "RecalageXY") {
+                            point->setType(PointType::RECALAGE_XY);
+                        }
                     } else if(key == "vitesse") {
                         point->setSpeed(value);
                     } else if(key == "sens") {

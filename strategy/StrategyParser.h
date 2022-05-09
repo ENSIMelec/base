@@ -26,10 +26,10 @@ public:
      */
     static int getStatus() {return status;}
 private:
+    inline static int status;
     inline static Objective * currentObjective;
 
     static int parseObjectivePoints(const string& path, const string& objFileName);
-    inline static int status;
 };
 
 

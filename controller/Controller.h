@@ -6,13 +6,12 @@
 #define CONTROLLER_H
 
 #include "PID.h"
-#include "SerialCodeurManager.h"
-#include "Odometry.h"
 #include "MotorManager.h"
-#include "MathUtils.h"
-#include "Config.h"
-#include "QuadrampDerivate.h"
-#include "Point.h"
+#include "../utility/MathUtils.h"
+#include "../utility/Configuration.h"
+#include "../odometry/Odometry.h"
+#include "../strategy/Point.h"
+#include "MovementController.h"
 
 class Controller {
 
@@ -25,21 +24,21 @@ public:
      * @param motor
      * @param config
     */
-    Controller(Odometry * odometry_, MotorManager * motorManager_, Config * config_) {
-        this->odometry = odometry_;
-        this->motorManager = motorManager_;
-        this->config = config_;
-    }
+    Controller(MotorManager * motorManager_, Odometry * odometry_, Configuration * config_);
 
     void update();
 
-    void setTargetXY(double x, double y);
+    void setTargetXY(int x, int y);
     void setTargetAngle(double angle);
 
     void stopMotors();
     bool isTargetReached();
 
     void setTargetPoint(Point* point);
+
+    void debug();
+
+    void setNextPoint(Point *point);
 
 private:
 
@@ -51,20 +50,15 @@ private:
     TrajectoryType currentTrajectoryType = NONE;
 
     // Correctors
-    double Pk_angle = 200;
+    double Pk_angle = 1;
     double Pk_distance = 1;
 
-    // Target position
-    Position targetPosition;
+    // Target location
+    Location targetPosition;
 
-    //Odometry
     Odometry * odometry;
-
-    // MoteurManager
     MotorManager * motorManager;
-
-    //Config
-    Config * config;
+    Configuration * config;
 
     double calculateAngleError();
     double calculateDistanceError();
@@ -74,8 +68,26 @@ private:
         double distance = 0;
     } command;
 
-    void absoluteAngle();
-    void debug();
+    struct {
+        int left = 0;
+        int right = 0;
+    } pwm;
+
+    Point * currentPoint;
+
+    double accelerationFactor = 0;
+    double accelerationCoeff;
+
+    void calculateAngleCommands();
+
+    bool angleIsCorrect = false;
+    double targetAngle = 0;
+
+    void calculateDistanceCommands();
+    void correctAngle();
+
+    MovementController * movementController;
+
 };
 
 

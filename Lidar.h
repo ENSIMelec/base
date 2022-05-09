@@ -1,84 +1,90 @@
-////
-//// Created by Christophe on 01/03/2022.
-////
-//
-//
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <signal.h>
-//#include <string.h>
-//#include <math.h>
-//
-//#include "../../sdk/lib/sl_lidar.h"
-//#include "../../sdk/lib/sl_lidar_driver.h"
-//#include "../../sdk/lib/sl_types.h"
-//
-//#ifndef _countof
-//#define _countof(_Array) (int)(sizeof(_Array) / sizeof(_Array[0]))
-//#endif
-//
-//#ifdef _WIN32
-//#include <Windows.h>
-//#define delay(x)   ::Sleep(x)
-//#else
-//#include <unistd.h>
-//
-//
-//#ifndef LIDAR_H
-//#define LIDAR_H
-//
-//static inline void delay(sl_word_size_t ms){
-//    while (ms>=1000){
-//        usleep(1000*1000);
-//        ms-=1000;
-//    };
-//    if (ms!=0)
-//        usleep(ms*1000);
-//}
-//#endif
-//
-//using namespace sl;
-//
-//class Lidar {
-//public:
-//    Lidar();
-//    ~Lidar();
-//    void printaround();
-//
-//    bool obstacleInRange(float distmesure, float anglemin, float anglemax);
-//    int détecterGammeDeDistange(float anglemin, float anglemax, float dist1, float dist2, float dist3);
-//
-//
-//private:
-//
-//
-//    void ctrlc(int);
-//
-//    bool ctrl_c_pressed;
-//    bool checkSLAMTECLIDARHealth(ILidarDriver *drv);
-//
-//    const char * opt_is_channel = NULL;
-//    const char * opt_channel = NULL;
-//    sl_u32         opt_channel_param_second = 0;
-//    sl_u32         baudrateArray[2] = {115200, 256000};
-//    sl_result     op_result;
-//    int          opt_channel_type = CHANNEL_TYPE_SERIALPORT;
-//
-//    IChannel* _channel = (*createSerialPortChannel("/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0", 115200));
-//    ILidarDriver * drv = *createLidarDriver();
-//
-//    sl_lidar_response_device_info_t devinfo;
-//    bool connectSuccess = false;
-//
-//    sl_lidar_response_measurement_node_hq_t nodes[8192];
-//    size_t   count = _countof(nodes);
-//
-//
-//
-//
-//
-//
-//};
-//
-//
-//#endif //LIDAR_H
+//#ifndef LIDAR_H_
+//#define LIDAR_H_
+
+#include <wiringSerial.h>
+#include <wiringPi.h>
+
+#include <stdio.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/time.h>
+#include <ctime>
+#include <thread>
+
+
+// A décommenter si vous voulez que le debug du lidar soit actif. Le debug va écrire dans la console à chaque évenement jugé important mais non gênant.
+#define LIDAR_DEBUG
+
+
+
+
+#define SERIAL_PORT "/dev/serial0"	//Port série interne de la raspPi, relié aux pins 8 (Tx) et 10 (Rx)
+#define PWM_PIN_LIDAR 1  		// Ne pas modifier !!! C'est la seule borne PWM de la rasp PI !
+#define DEFAULT_LIDAR_SPEED 512
+#define DEFAULT_LIDAR_RUN_TIME 95
+
+#define ANGULAR_PRECISION 6
+#define ANGLE_MAX 23040
+#define DISTANCE_MAX 65535
+#define DISTANCE_MIN 50
+#define DISTANCE_WARNING 700
+#define DISTANCE_DANGER 400
+#define WARNING_QUOTA 5
+#define DANGER_QUOTA 5
+#define DANGER_TIME 100
+#define TTL_LOCAL 100
+
+
+const char SCAN[] = {0xA5,0x20};
+const char STOP[] = {0xA5,0x25};
+const char RESET[] = {0xA5,0x40};
+
+
+class Lidar{
+	
+	private:
+		
+		static const uint8_t SCAN_HEADER[7];
+
+		// Compteur pour quand un obstacle est proche (ie : le robot d'en face) 
+		inline static int dangerCounter, warningCounter;
+
+		// Etat de la liaison série avec le lidar.
+		inline static int serialState, serialID;
+
+		inline static bool isRunning;
+
+        static void setMotorSpeed(int speed);
+        static void sendCommand(const char command[]);
+
+		/*
+		// Grille du Lidar une fois le traitement effectué. La grille représente la table de jeu et la position des "murs"
+		inline static int gridX, gridY, ***grid;
+		*/
+	public:
+		// Commandes du lidar. A envoyer via "serialPuts"
+		static const char SCAN[2];
+		static const char STOP[2];
+		static const char RESET[2];
+
+		static void println(const char* msg);
+
+		static void init();
+		static void start(int speed = DEFAULT_LIDAR_SPEED);
+		static void stop();
+		static bool test();
+		static void run(int runtime = DEFAULT_LIDAR_RUN_TIME, int motorSpeed = DEFAULT_LIDAR_SPEED);
+
+        static bool isActive();
+		static bool isDanger();
+		static bool isWarning();
+};
+
+
+
+
+
+
+//#endif // LIDAR_H_

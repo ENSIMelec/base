@@ -2772,7 +2772,7 @@ namespace nlohmann
 {
 namespace detail
 {
-/// struct to capture the start position of the current token
+/// struct to capture the start location of the current token
 struct position_t
 {
     /// the total number of characters read
@@ -2903,8 +2903,8 @@ class parse_error : public exception
     /*!
     @brief create a parse error exception
     @param[in] id_       the id of the exception
-    @param[in] pos       the position where the error occurred (or with
-                         chars_read_total=0 if the position cannot be
+    @param[in] pos       the location where the error occurred (or with
+                         chars_read_total=0 if the location cannot be
                          determined)
     @param[in] what_arg  the explanatory string
     @return parse_error object
@@ -5811,7 +5811,7 @@ struct json_sax
 
     /*!
     @brief a parse error occurred
-    @param[in] position    the position in the input where the error occurs
+    @param[in] position    the location in the input where the error occurs
     @param[in] last_token  the last read token
     @param[in] ex          an exception object describing the error
     @return whether parsing should proceed (must return false)
@@ -7838,7 +7838,7 @@ scan_number_done:
     // diagnostics
     /////////////////////
 
-    /// return position of last read token
+    /// return location of last read token
     constexpr position_t get_position() const noexcept
     {
         return position;
@@ -8009,7 +8009,7 @@ scan_number_done:
     /// whether the next get() call should just return current
     bool next_unget = false;
 
-    /// the start position of the current token
+    /// the start location of the current token
     position_t position {};
 
     /// raw input token string (for error messages)
@@ -8421,7 +8421,7 @@ class binary_reader
     /*!
     @brief Read a BSON document element of the given @a element_type.
     @param[in] element_type The BSON element type, c.f. http://bsonspec.org/spec.html
-    @param[in] element_type_parse_position The position in the input stream,
+    @param[in] element_type_parse_position The location in the input stream,
                where the `element_type` was read.
     @warning Not all BSON element types are supported yet. An unsupported
              @a element_type will give rise to a parse_error.114:
@@ -12874,8 +12874,8 @@ class json_pointer
         }
 
         // extract the reference tokens:
-        // - slash: position of the last read slash (or end of string)
-        // - start: position after the previous slash
+        // - slash: location of the last read slash (or end of string)
+        // - start: location after the previous slash
         for (
             // search for the first slash after the first character
             std::size_t slash = reference_string.find_first_of('/', 1),
@@ -15923,7 +15923,7 @@ inline char* format_buffer(char* buf, int len, int decimal_exponent,
 
     // v = buf * 10^(n-k)
     // k is the length of the buffer (number of decimal digits)
-    // n is the position of the decimal point relative to the start of the buffer.
+    // n is the location of the decimal point relative to the start of the buffer.
 
     if (k <= n && n <= max_exp)
     {
@@ -16532,7 +16532,7 @@ class serializer
                         bytes = 0;
                     }
 
-                    // remember the byte position of this accept
+                    // remember the byte location of this accept
                     bytes_after_last_accept = bytes;
                     undumped_chars = 0;
                     break;

@@ -15,10 +15,10 @@ public:
     static float periodicmod(float x, float y);
     static float inrange(float x, float min, float max);
     static double constrain(double value, double min, double max);
-    static float deg2rad(float deg);
-    static float rad2deg(float rad);
-    static float micros2sec(float sec);
-	static float millis2sec(float millis);
+    static float deg2rad(double deg);
+    static float rad2deg(double rad);
+    static float micros2sec(double sec);
+	static float millis2sec(double millis);
 };
 
 

@@ -1,4 +1,4 @@
-#include "SerialCodeurManager.h"
+#include "SerialCoderManager.h"
 
 using namespace std;
 
@@ -8,7 +8,7 @@ int count = 1;
 int encoders_fd ;
 
 
-SerialCodeurManager::SerialCodeurManager()
+SerialCoderManager::SerialCoderManager()
 {
 //    cout << "Initializing coder manager ... ";
 
@@ -17,6 +17,7 @@ SerialCodeurManager::SerialCodeurManager()
         string port = "/dev/ttyUSB" + to_string(i);
         if((encoders_fd = serialOpen(port.c_str(), 115200)) > 0) {
             initSuccess = true;
+            cout << endl << "\tConnected to /dev/ttyUSB" << i << ", ";
             break;
         };
     }
@@ -32,7 +33,7 @@ SerialCodeurManager::SerialCodeurManager()
     nextTime = millis () + 10 ;
 }
 
-void SerialCodeurManager::readAndReset()
+void SerialCoderManager::readAndReset()
 {
     char SerieData = ' ';
 
@@ -103,9 +104,9 @@ void SerialCodeurManager::readAndReset()
     leftTicks = atoi(tickg);
     rightTicks = atoi(tickd);
     tempsLast = atoi(temps);
-    //cout <<"leftTicks :"<<leftTicks <<endl;
-    //cout <<"rightTicks :"<<rightTicks <<endl;
-    //cout <<"tempsLast :"<<tempsLast <<endl;
+//    cout <<"leftTicks :"<<leftTicks <<endl;
+//    cout <<"rightTicks :"<<rightTicks <<endl;
+//    cout <<"tempsLast :"<<tempsLast <<endl;
     if(isnan(leftTicks)){
         leftTicks=0;
     }
@@ -117,22 +118,22 @@ void SerialCodeurManager::readAndReset()
     }
 }
 
-void SerialCodeurManager::reset()
+void SerialCoderManager::reset()
 {
 	serialPutchar (encoders_fd, 'R');
 }
 
-int SerialCodeurManager::getRightTicks()
+int SerialCoderManager::getRightTicks()
 {
     return rightTicks - oldRightTicks;
 }
 
-int SerialCodeurManager::getLeftTicks()
+int SerialCoderManager::getLeftTicks()
 {
     return leftTicks - oldLeftTicks;
 }
 
-int SerialCodeurManager::getTime()
+int SerialCoderManager::getTime()
 {
     return tempsLast - oldTempsLast;
 }

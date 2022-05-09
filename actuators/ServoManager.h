@@ -28,7 +28,7 @@ public:
 	/*! 
 	 *  \brief Initialisation du shield servomoteurs
 	 * 
-	 *  Méthode qui permet d'initialiser le shield servomoteurs.
+	 *  Méthode qui permet d'initialize le shield servomoteurs.
 	 *  
 	 *  \param angle : angle en degrée [0-180].
 	 *  \return -1 si l'initialisation à échoué, sinon 0.

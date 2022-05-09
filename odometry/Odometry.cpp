@@ -7,8 +7,8 @@ using namespace std;
  * @param codeurs
  */
 
-Odometry::Odometry() {
-    m_codeurs = new SerialCodeurManager();
+Odometry::Odometry(Configuration * config) {
+    m_codeurs = new SerialCoderManager();
 
     // nouvelle approche odométrie
     //this->PERIM_ROUE = 31.5*M_PI;
@@ -21,15 +21,14 @@ Odometry::Odometry() {
 
     //this->ENTRAXE = 280;
 
-    float diametre = Configuration::instance().getFloat("diametre_roue");
-    this->PERIM_ROUE = diametre*M_PI; //Diametre * PI
-    this->RESOLUTION = Configuration::instance().getFloat("resolution");
-    this->COEF_CORRECTEUR = Configuration::instance().getFloat("coeff_correcteur");
-    this->ENTRAXE = Configuration::instance().getFloat("entraxe");
+    float diametre = config->getDouble("odometry.wheel_diameter");
+    this->PERIM_ROUE = diametre * M_PI; //Diametre * PI
+    this->RESOLUTION = config->getDouble("odometry.resolution");
+    this->COEF_CORRECTEUR = config->getDouble("odometry.coeff_correcteur");
+    this->ENTRAXE = config->getDouble("odometry.entraxe");
     
     // start
     this->m_pos.theta = 0;
-
 }
 
 /**
@@ -47,8 +46,8 @@ void Odometry::update() {
     long int ticksRight = m_codeurs->getRightTicks();
 
     // calculer la distance de effectué par chaque roue
-    float distanceLeft = ticksLeft * (PERIM_ROUE/RESOLUTION);
-    float distanceRight = ticksRight * ((COEF_CORRECTEUR*PERIM_ROUE)/RESOLUTION);
+    float distanceLeft = ticksLeft * (PERIM_ROUE / RESOLUTION);
+    float distanceRight = ticksRight * ((COEF_CORRECTEUR * PERIM_ROUE) / RESOLUTION);
 
 
     // Calculer les variations de position en distance et en angle
@@ -137,7 +136,8 @@ void Odometry::debug() {
 //    cout << "[DATA CODEUR][TICS] : Gauche:" << m_codeurs.getLeftTicks() << " Droit: " << m_codeurs.getRightTicks() << endl;
 //    cout << "[DATA CODEUR][TOTAL TICS] : Gauche:" << getTotalTicksL() << " Droit: " << getTotalTicksR() << endl;
 //    cout << "[DATA CODEUR][LAST TIME] : " << getLastTime() << " (ms)" << endl;
-    cout << "[ODOMETRY][POSITION] : X:" << getPosition().x << " Y: " << getPosition().y << " Theta: " <<  MathUtils::rad2deg(getPosition().theta) << " °" << endl;
+    cout << "[ODOMETRY][POSITION] : X:" << getLocation().x << " Y: " << getLocation().y << " Theta: " << MathUtils::rad2deg(
+            getLocation().theta) << " °" << endl;
 //    cout << "[ODOMETRY][DISTANCE PARCOURU EN LASTTIME (mm)] : " << getDeltaDistance() << endl;
 //    cout << "[ODOMETRY][ROTATION EFFECTUE EN LASTTIME (rad)] : " << getDeltaOrientation() << endl;
     cout << "[ODOMETRY][VITESSE]: Vitesse angulaire (rad/s) : " << getAngVel() << " Vitesse Linéaire (mm/s) : " << getLinVel() << endl;

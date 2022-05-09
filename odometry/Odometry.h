@@ -1,36 +1,35 @@
 #ifndef ROBOT_ODOMETRY_H
 #define ROBOT_ODOMETRY_H
 
-#include "SerialCodeurManager.h"
+#include "SerialCoderManager.h"
 #include "cmath"
 #include "iostream"
-#include "MathUtils.h"
-#include "Config.h"
-#include "Configuration.h"
+#include "../utility/MathUtils.h"
+#include "../utility/Configuration.h"
 
 /**
  * @brief Structure de position.
  * \author Taoufik Tribki
- * Position est une structure de Odometry.h qui permet en une variable d'obtenir la totalité des informations à propos du positionnement du robot.
+ * Location est une structure de Odometry.h qui permet en une variable d'obtenir la totalité des informations à propos du positionnement du robot.
  */
-struct Position
+struct Location
 {
     /**
-     * @brief Constructeur de Position.
-     * Constructeur de Position qui initialise la position au coordonnées (0,0) et à l'angle 0.
+     * @brief Constructeur de Location.
+     * Constructeur de Location qui initialise la position au coordonnées (0,0) et à l'angle 0.
      */
-    Position() : x(0), y(0), theta(0){}
+    Location() : x(0), y(0), theta(0){}
 
     /**
-     * @brief  Constructeur de Position.
+     * @brief  Constructeur de Location.
      *
-     * Constructeur de Position qui initialise la position au coordonnées indiqués.
+     * Constructeur de Location qui initialise la position au coordonnées indiqués.
      *
      * @param x coordoonée en x initial.
      * @param y coordoonée en y initial.
      * @param theta angle initial.
      */
-    Position(double x, double y, double theta) : x(x), y(y), theta(theta){}
+    Location(double x, double y, double theta) : x(x), y(y), theta(theta){}
     // Coordonnée en x
     double x;
     // Cordonnée en y
@@ -45,7 +44,7 @@ class Odometry {
 
 public:
 
-    explicit Odometry();
+    explicit Odometry(Configuration * config);
     void debug();
     /*void calcul_position_segment(float distance, float angle);
     void calcul_position_arc(float distance, float angle);*/
@@ -54,7 +53,7 @@ public:
      * @brief Retourne la position
      * @return
      */
-    const Position &getPosition() const { return m_pos; }
+    const Location &getLocation() const { return m_pos; }
     void setPosition(float x, float y, float theta){ m_pos.x = x; m_pos.y = y; m_pos.theta = theta;}
 
     /**
@@ -86,7 +85,7 @@ public:
     double getTheta() {return m_pos.theta;}
 
 protected:
-    Position m_pos; /*!< Structure de position de Odometry. */
+    Location m_pos; /*!< Structure de position de Odometry. */
     float m_linVel = 0; /*!< Vitesse lineaire en mm/s. */
     float m_angVel = 0; /*!< Vitesse angulaire en rad/s.*/
 
@@ -120,7 +119,7 @@ protected:
     float COEF_CORRECTEUR = 0;
     float ENTRAXE = 0; // entraxe entre les deux roues en mm
 
-    SerialCodeurManager * m_codeurs;
+    SerialCoderManager * m_codeurs;
 
 };
 

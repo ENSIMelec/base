@@ -13,14 +13,15 @@
 #include "ServoManager.h"
 //#include "StepperManager.h"
 
+using namespace std;
 
 class ActionManager
 {
 
 public:
-	ActionManager(int i2c_Servos, int nbAX12 /*, ClientUDP& udp*/);
+	ActionManager(int i2c_Servos, int nbAX12, const string &actionsPath);
 	void close();
-	void action(std::string filename);
+	void action(const std::string& filename);
 
 private:
 	void sleepMillis(int millis);
@@ -28,6 +29,7 @@ private:
 	ServoManager servoManager;
 	//StepperManager stepper;
 	AX12Manager ax12Manager;
+    string path;
 };
 
 #endif // ACTIONMANAGER_H_INCLUDED

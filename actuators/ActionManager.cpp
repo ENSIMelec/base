@@ -1,11 +1,11 @@
 #include "ActionManager.h"
 
-using namespace std;
-
 //Constructeur par défaut : utilise la liste d'initialisation pour init les classes utilisées dans la classe
-ActionManager::ActionManager(int i2c_Servos, int nbAX12) :
+ActionManager::ActionManager(int i2c_Servos, int nbAX12, const string& actionsPath) :
         servoManager(i2c_Servos), ax12Manager(nbAX12)
 {
+    path = actionsPath;
+
 	servoManager.servoInitialisation();
 	printf("Constructeur action");
 }
@@ -19,11 +19,11 @@ void ActionManager::close() {
 }
 
 
-void ActionManager::action(string filename) {
+void ActionManager::action(const string& filename) {
 	
 	unsigned int indexAction = 0;
 	vector<ActionServo> actions;
-	actions = FichierAction::readPoints(filename);
+	actions = FichierAction::readPoints(path + filename);
 	char typeActionneur;
 	int numActionneur, angleAction, forceAction, tempsAction;
 
