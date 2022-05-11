@@ -3,6 +3,9 @@
 //
 
 #include "MathUtils.h"
+#include "iostream"
+
+using namespace std;
 
 float MathUtils::inrange(float x, float min, float max) {
     return periodicmod(x - min, max - min) + min;
@@ -34,4 +37,14 @@ float MathUtils::micros2sec(double sec) {
 }
 float MathUtils::millis2sec(double millis) {
     return millis * 0.001;
+}
+
+/**
+ * Return an angle value between -180 and 180
+ * @param angle
+ * @return
+ */
+double MathUtils::normalAngleRange(double angle, bool inRad) {
+    double base = (inRad) ? M_PI : 180;
+    return fmod(angle, base);
 }
