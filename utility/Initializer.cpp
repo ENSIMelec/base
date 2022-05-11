@@ -6,6 +6,7 @@
 
 #include "Initializer.h"
 #include "../Lidar.h"
+#include "../../ResistanceReader.h"
 
 
 #define EXIT_FAIL_I2C 1
@@ -14,11 +15,12 @@ Configuration * Initializer::start(bool log) {
     allowLogging = log;
 
     configuration = new Configuration(RESOURCES_PATH + "config.info");
+    activateLidar = configuration->getInt("global.activate_lidar");
 
     initWiringPi();
-    initLidar();
-    initMotorManager();
     initOdometry();
+    if(activateLidar == 1) initLidar();
+    initMotorManager();
     initController();
     initActionManager();
 
@@ -56,7 +58,7 @@ void Initializer::initLidar() {
 
     // Starting the thread
     int matchTime = configuration->getInt("global.match_time");
-    lidarThread = new thread(Lidar::run, matchTime - 5, 800);
+    lidarThread = new thread(Lidar::run, matchTime, 800);
 }
 
 void Initializer::initMotorManager() {
@@ -99,9 +101,12 @@ void Initializer::end() {
     close(motor_fd);
     close(servos_fd);
 
-    Lidar::stop();
-    lidarThread->join();
+    if(activateLidar == 1) {
+        Lidar::stop();
+        lidarThread->join();
+    }
 
     if(allowLogging) cout << "done" << endl;
 }
+
 

@@ -19,6 +19,8 @@ public:
     static float rad2deg(double rad);
     static float micros2sec(double sec);
 	static float millis2sec(double millis);
+
+    static double normalAngleRange(double angle, bool rad = true);
 };
 
 

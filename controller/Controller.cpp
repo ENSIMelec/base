@@ -10,7 +10,10 @@ Controller::Controller(MotorManager * motorManager_, Odometry * odometry_, Confi
     this->motorManager = motorManager_;
     this->config = config_;
 
+    activateMotors = config_->getInt("global.activate_motors");
+
     movementController = new MovementController(config_);
+    angleController = new AngleController(config_);
 
 //    Pk_angle = config->getDouble("controller.translation.Pk_angle");
 //    Pk_distance = config->getDouble("controller.translation.Pk_distance");
@@ -18,6 +21,9 @@ Controller::Controller(MotorManager * motorManager_, Odometry * odometry_, Confi
 }
 
 void Controller::update() {
+
+    command.distance = 0;
+    command.angle = 0;
 
     Location currentLocation = odometry->getLocation();
     double x = currentLocation.x;
@@ -31,16 +37,21 @@ void Controller::update() {
             command.angle = movementController->getAngleCommand();
             command.distance = movementController->getDistanceCommand();
             break;
+        case PointType::ANGLE:
+            angleController->calculateCommands(theta);
+
+            command.angle = angleController->getAngleCommand();
+            break;
     }
 
-//    calculateAngleCommands();
-//    correctAngle();
-
-    pwm.left = (int) (command.distance + command.angle);
-    pwm.right = (int) (command.distance - command.angle);
+    pwm.left = (int) (command.distance - command.angle);
+    pwm.right = (int) (command.distance + command.angle);
 
     // Set the orders
-    motorManager->setOrder(pwm.left, pwm.right);
+    if(activateMotors != 0) motorManager->setOrder(pwm.left, pwm.right);
+    else {
+        cout << "Motors are deactivated !" << endl;
+    }
 }
 
 void Controller::debug() {
@@ -51,18 +62,9 @@ void Controller::debug() {
 #ifdef DEBUG_CONTROLLER
     Location pos = odometry->getLocation();
 
-    double theta = odometry->getTheta();
-    double distanceError = calculateDistanceError();
-    double angleError = targetAngle - odometry->getTheta();
-
-    command.angle = angleError;
-
-    cout << "[POSITION] X: " << pos.x << "\tY: " << pos.y << "\tTheta: " << theta << "(" << MathUtils::rad2deg(theta) << "°)" << endl;
-    cout << "[CONTROLLER] Distance Error : " << distanceError << "\tAngle error : " << angleError << " (" << MathUtils::rad2deg(angleError) << ")" << endl;
-
-    cout << "[CONTROLLER] Angle error : " << angleError << endl;
-    cout << "[CONTROLLER] Angle command : " << command.angle << "\tDistance command : " << command.distance << endl;
-    cout << "[CONTROLLER] PWM Left : " << pwm.left << "\tPWM Right : " << pwm.right << endl;
+    cout << "[POSITION] X: " << pos.x << "\tY: " << pos.y << "\tTheta: " << pos.theta << "(" << MathUtils::rad2deg(pos.theta) << "°)" << endl;
+    cout << "[CONTROLLER][Commands] Distance : " << command.distance << "\tAngle : " << command.angle << endl;
+    cout << "[CONTROLLER][PWM] Left : " << pwm.left << "\tRight : " << pwm.right << endl;
 #endif
 }
 
@@ -106,6 +108,9 @@ void Controller::setNextPoint(Point * point) {
         case PointType::MOVE_TO_POSITION:
             movementController->setTargetPosition(point->getX(), point->getY());
             break;
+        case PointType::ANGLE:
+            angleController->setTargetAngle(point->getTheta());
+            break;
     }
 }
 
@@ -113,6 +118,8 @@ bool Controller::isTargetReached() {
     switch (currentPoint->getType()) {
         case PointType::MOVE_TO_POSITION:
             return movementController->isTargetReached();
+        case PointType::ANGLE:
+            return angleController->isTargetReached();
     }
 
     return true;

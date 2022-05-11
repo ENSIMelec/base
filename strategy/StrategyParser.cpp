@@ -138,6 +138,8 @@ int StrategyParser::parseObjectivePoints(const string& path, const string& objFi
                             point->setType(PointType::RECALAGE_Y);
                         } else if(value == "RecalageXY") {
                             point->setType(PointType::RECALAGE_XY);
+                        } else if(value == "Angle") {
+                            point->setType(PointType::ANGLE);
                         }
                     } else if(key == "vitesse") {
                         point->setSpeed(value);

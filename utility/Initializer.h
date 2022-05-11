@@ -14,30 +14,30 @@
 #include <thread>
 
 using namespace std;
-const string RESOURCES_PATH = "/home/pi/Documents/Krabbs/res/";
+const string RESOURCES_PATH = "/home/pi/Documents/Kiroulpa/res/";
 
 class Initializer {
 public:
     static Configuration * start(bool log = true);
     static void end();
 
+    static bool isLidarActivated() {return activateLidar;}
     // ----- Getters -----
     static Configuration * getConfiguration() {return configuration;}
-    static Controller * getController() {return controller;}
     static Odometry * getOdometry() {return odometry;}
-    static ActionManager * getActionManager() {return actionManager;}
     static MotorManager * getMotorManager() {return motorManager;}
+    static Controller * getController() {return controller;}
+    static ActionManager * getActionManager() {return actionManager;}
 
 private:
-    inline static bool allowLogging;
 
-    inline static Configuration *configuration = nullptr;
     inline static MotorManager *motorManager = nullptr;
     inline static Odometry *odometry = nullptr;
     inline static Controller *controller = nullptr;
     inline static ActionManager *actionManager = nullptr;
 
     inline static thread * lidarThread;
+    inline static int activateLidar;
 
     inline static int motor_fd;
     inline static int servos_fd;
@@ -48,6 +48,10 @@ private:
     static void initOdometry();
     static void initActionManager();
     static void initLidar();
+
+protected:
+    inline static bool allowLogging;
+    inline static Configuration *configuration = nullptr;
 };
 
 #endif //KRABBS_INITIALIZE_H

@@ -12,6 +12,7 @@
 #include "../odometry/Odometry.h"
 #include "../strategy/Point.h"
 #include "MovementController.h"
+#include "AngleController.h"
 
 class Controller {
 
@@ -87,7 +88,9 @@ private:
     void correctAngle();
 
     MovementController * movementController;
+    AngleController * angleController;
 
+    int activateMotors;
 };
 
 
