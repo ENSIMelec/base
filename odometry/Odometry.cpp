@@ -2,6 +2,9 @@
 
 using namespace std;
 
+//#define DEBUG_ODOMETRY
+#define INIT_TIME 2000
+
 /**
  * Odométrie
  * @param codeurs
@@ -9,6 +12,8 @@ using namespace std;
 
 Odometry::Odometry(Configuration * config) {
     m_codeurs = new SerialCoderManager();
+
+    initTime = millis();
 
     // nouvelle approche odométrie
     //this->PERIM_ROUE = 31.5*M_PI;
@@ -37,6 +42,16 @@ Odometry::Odometry(Configuration * config) {
  * Approximation linéaire
  */
 void Odometry::update() {
+
+    /* Important :
+     * If you send data too early, the arduino will not work normally.
+     * That's why there is an INIT_TIME to let the arduino boot correctly.
+     */
+    while(millis() < initTime + INIT_TIME) {};
+
+#ifdef DEBUG_ODOMETRY
+    unsigned int startTime = millis();
+#endif
 
     // récupérer les tics des codeurs + réinitialisation
     m_codeurs->readAndReset();
@@ -96,11 +111,6 @@ void Odometry::update() {
     this->m_pos.y       += dDistance * sinf(avgTheta);
     this->m_pos.theta   += dAngle;
 
-     if (this->m_pos.theta > M_PI)
-		this->m_pos.theta -= 2 * M_PI ;
-     else if (this->m_pos.theta <= -M_PI)
-		this->m_pos.theta += 2 * M_PI ;
-
     // Calcul de la vitesse angulaire et linéaire
     // Actualisation du temps
     this->m_lastTime = m_codeurs->getTime();
@@ -108,8 +118,8 @@ void Odometry::update() {
     float timestep      = MathUtils::millis2sec(m_lastTime); // micros -> s
     //float timestep      = 0.01; // micros -> s
 
-    float linVel        = 0; // mm / s
-    float angVel        = 0; // rad / s
+    float linVel = 0; // mm / s
+    float angVel = 0; // rad / s
 
     if(timestep > 0) {
         linVel = dDistance / timestep;
@@ -126,24 +136,29 @@ void Odometry::update() {
 
     // Actualisation du total distance parcouru
     distance_total_update(ticksLeft, ticksRight);
+
+#ifdef DEBUG_ODOMETRY
+    unsigned int endTime = millis();
+    cout << "[Odometry] Elapsed time : " << (endTime - startTime) << endl;
+#endif
 }
 
 /**
  * @brief Debug purpose
  */
 void Odometry::debug() {
+    double angleDeg = MathUtils::rad2deg(m_pos.theta);
+
     cout << "===========DEBUG ODOMETRY============" << endl;
 //    cout << "[DATA CODEUR][TICS] : Gauche:" << m_codeurs.getLeftTicks() << " Droit: " << m_codeurs.getRightTicks() << endl;
 //    cout << "[DATA CODEUR][TOTAL TICS] : Gauche:" << getTotalTicksL() << " Droit: " << getTotalTicksR() << endl;
 //    cout << "[DATA CODEUR][LAST TIME] : " << getLastTime() << " (ms)" << endl;
-    cout << "[ODOMETRY][POSITION] : X:" << getLocation().x << " Y: " << getLocation().y << " Theta: " << MathUtils::rad2deg(
-            getLocation().theta) << " °" << endl;
+    cout << "[ODOMETRY][POSITION] X:" << m_pos.x << "\tY: " << m_pos.y;
+    cout << "\tTheta: " << angleDeg << "° (" << MathUtils::normalAngleRange(angleDeg, false) << "°)" << endl;
 //    cout << "[ODOMETRY][DISTANCE PARCOURU EN LASTTIME (mm)] : " << getDeltaDistance() << endl;
 //    cout << "[ODOMETRY][ROTATION EFFECTUE EN LASTTIME (rad)] : " << getDeltaOrientation() << endl;
     cout << "[ODOMETRY][VITESSE]: Vitesse angulaire (rad/s) : " << getAngVel() << " Vitesse Linéaire (mm/s) : " << getLinVel() << endl;
 //    cout << "[ODOMETRY][TOTAL DISTANCE] (cm): " << getTotalDistance() / 10 << endl;
-    cout << "=======================" << endl;
-
 }
 
 void Odometry::distance_total_update(int long ticksLeft, int long ticksRight) {
@@ -151,6 +166,6 @@ void Odometry::distance_total_update(int long ticksLeft, int long ticksRight) {
     m_totalTicksL += ticksLeft;
     m_totalTicksR += ticksRight;
 
-    m_totalDistance += m_dDistance;
-    m_totalAngle += m_dTheta;
+    totalDistance += m_dDistance;
+    totalAngle += m_dTheta;
 }

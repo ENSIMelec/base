@@ -65,59 +65,44 @@ public:
     // ---------- Getters & Setters ----------
     float getDeltaOrientation() const { return m_dAvgTheta; }
     float getDeltaTheta() const { return m_dTheta; }
-    float getTotalTheta() const { return m_totalAngle; }
+    float getTotalTheta() const { return totalAngle; }
     float getDeltaDistance() const { return m_dDistance; }
-    float getTotalDistance() const { return m_totalDistance; }
+    float getTotalDistance() const { return totalDistance; }
     float getLinVel() const {return m_linVel;} /* Vitesse linéaire */
     float getAngVel() const {return m_angVel;} /* Vitesse angulaire */
-    int getLastTime() const { return m_lastTime; }
-    float getTotalTicksL() const { return m_totalTicksL; };
-    float getTotalTicksR() const { return m_totalTicksR; };
-    float getEntraxe() const { return ENTRAXE; };
 
     void setX(float x) {m_pos.x = x;}
-    double getX() {return m_pos.x;}
+    double getX() const {return m_pos.x;}
 
     void setY(float y) {m_pos.y = y;}
-    double getY() {return m_pos.y;}
+    double getY() const {return m_pos.y;}
 
     void setTheta(float theta) {m_pos.theta = theta;}
-    double getTheta() {return m_pos.theta;}
+    double getTheta() const {return m_pos.theta;}
 
 protected:
     Location m_pos; /*!< Structure de position de Odometry. */
+
     float m_linVel = 0; /*!< Vitesse lineaire en mm/s. */
     float m_angVel = 0; /*!< Vitesse angulaire en rad/s.*/
 
     int m_totalTicksL = 0; /* Totat des tics gauche */
     int m_totalTicksR = 0;/* Totat des tics droite */
-    float m_totalDistance = 0; /* Total distance parcouru (odometry test purpose) */
-    float m_totalAngle = 0;
+    float totalDistance = 0; /* Total distance parcouru (odometry test purpose) */
+    float totalAngle = 0;
 
     float m_dDistance = 0; /*  Distance en mm parcouru en dt */
     float m_dAvgTheta = 0; /* moyenne angle(t-1) et t en rad en dt */
     float m_dTheta = 0; /* angle rad en dt */
     float m_lastTime = 0; /* dt */
 
-
-    /**
-     * Coefficient pour tics -> mm
-     */
-    float TICK_RIGHT_TO_MM = 0; /* Coefficient Longeur Gauche */
-    float TICK_LEFT_TO_MM = 0; /* Coefficient Longeur Droit */
-
-    /**
-     * Coefficient pour tics -> rad
-     */
-    float TICK_RIGHT_TO_RAD = 0; /* Coefficient Angle Gauche */
-    float TICK_LEFT_TO_RAD = 0; /* Coefficient Angle Droit */
-
-
     // constantes
     float PERIM_ROUE = 0; /* Perimetre roue en mm  Diametre * PI */
     float RESOLUTION = 0; /* nombre tics par 1 tour du roue */
     float COEF_CORRECTEUR = 0;
     float ENTRAXE = 0; // entraxe entre les deux roues en mm
+
+    unsigned int initTime = 0;
 
     SerialCoderManager * m_codeurs;
 
