@@ -8,7 +8,7 @@ using namespace std;
  * @param min
  * @param max
  */
-PID::PID(float kp, float ki, float kd, float min, float max) {
+PID::PID(double kp, double ki, double kd, double min, double max) {
 
     this->m_kp = kp;
     this->m_ki = ki;
@@ -24,33 +24,33 @@ PID::PID(float kp, float ki, float kd, float min, float max) {
  * @param timestep
  * @return
  */
-float PID::compute(float currentState, float consigne) {
+double PID::compute(float currentState, float consigne) {
 
     // Ecart entre la consigne et la mesure
-    float error = consigne - currentState;
+    double error = consigne - currentState;
 
     // Proportional term
-    float Pout = m_kp * error;
+    double Pout = m_kp * error;
 
     //cout << " ERROR : " << error << endl;
     //cout << " ERROR Pout (kp*error): " << Pout << endl;
 
     // Integral term
     this->m_integral += error;
-    float Iout = m_ki * this->m_integral;
+    double Iout = m_ki * this->m_integral;
 
     // Derivative term
     this->m_derivative = error - m_pre_error;
-    float Dout = m_kd * this->m_derivative;
+    double Dout = m_kd * this->m_derivative;
 
     // Compute the PID controller's output
-    float output = Pout + Iout + Dout;
+    double output = Pout + Iout + Dout;
 
     // Restrict to max/min
-//    if( output > m_max )
-//        output = m_max;
-//    else if( output < m_min )
-//        output = m_min;
+    if(output > m_max )
+        output = m_max;
+    else if( output < m_min )
+        output = m_min;
 
     // Save error to previous error
     this->m_pre_error = error;

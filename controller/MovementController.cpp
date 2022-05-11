@@ -24,8 +24,8 @@ void MovementController::calculateCommands(double x, double y, double theta) {
     }
 
     // Calculate the commands
-    double dX = x - targetLocation.x;
-    double dY = y - targetLocation.y;
+    double dX = targetLocation.x - x;
+    double dY = targetLocation.y - y;
 
     calculateDistanceCommand(dX, dY);
     calculateAngleCommand(dX, dY, theta);
@@ -47,6 +47,11 @@ void MovementController::setTargetPosition(double x, double y) {
 void MovementController::calculateAngleCommand(double dX, double dY, double theta) {
 
     // Calculate the angle to the target
+    if(dX == 0) {
+        angleCommand = 0;
+        return;
+    }
+
     double angleError = atan(dY / dX);
 
     // Only when the angle should be over 90°
@@ -65,6 +70,9 @@ void MovementController::calculateAngleCommand(double dX, double dY, double thet
     // Set the angle corresponding to the current angle
     angleError -= theta;
 
+    cout << "[ANGLE CALCULATION] dx : " << dX << " dy : " << dY << endl;
+    cout << "[ANGLE CALCULATION] Angle error : " << angleError << " (" << MathUtils::rad2deg(angleError) << "°)" << endl;
+
     // Adjust the command
     angleCommand = Pk_angle * angleError * accelerationFactor;
 }
@@ -72,5 +80,5 @@ void MovementController::calculateAngleCommand(double dX, double dY, double thet
 void MovementController::calculateDistanceCommand(double dX, double dY) {
     double distanceError = sqrt(dX * dX + dY * dY);
     distanceCommand = distanceError * Pk_distance * accelerationFactor;
-    distanceCommand = MathUtils::constrain(distanceCommand, 0, 70);
+    distanceCommand = MathUtils::constrain(distanceCommand, 0, 50);
 }

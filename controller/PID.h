@@ -14,9 +14,9 @@ public:
 
 
     PID(): m_kp(0), m_ki(0), m_kd(0), m_min(0), m_max(0) {};
-    PID(float kp, float ki, float kd, float min, float max);
+    PID(double kp, double ki, double kd, double min, double max);
 
-    float compute(float input, float consigne);
+    double compute(float input, float consigne);
     void setTunings(float kp, float ki, float kd);
     void resetErrors();
 
@@ -28,24 +28,24 @@ public:
     double getDeltaError();
 
 private:
-    float m_goal;
+    double m_goal;
 
     // m_kp -  proportional gain
     // m_ki -  Integral gain
     // m_kd -  derivative gain
     // timestep -  loop interval time
 
-    float m_kp;
-    float m_ki;
-    float m_kd;
+    double m_kp;
+    double m_ki;
+    double m_kd;
 
     // m_min - maximum value of manipulated variable
     // m_max - minimum value of manipulated variable
-    float m_min, m_max;
+    double m_min, m_max;
 
-    float m_pre_error   = 0;
-    float m_derivative  = 0;
-    float m_integral    = 0;
+    double m_pre_error   = 0;
+    double m_derivative  = 0;
+    double m_integral    = 0;
 
 };
 
