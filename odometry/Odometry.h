@@ -6,6 +6,7 @@
 #include "iostream"
 #include "../utility/MathUtils.h"
 #include "../utility/Configuration.h"
+#include <wiringPi.h>
 
 /**
  * @brief Structure de position.
@@ -49,6 +50,13 @@ public:
     /*void calcul_position_segment(float distance, float angle);
     void calcul_position_arc(float distance, float angle);*/
     void distance_total_update(int long ticksLeft, int long ticksRight);
+
+
+    
+    bool isStuck(int motorRSpeed, int motorLSpeed);
+    void unStuck(int graceTime = UNSTUCK_GRACE_TIME);
+
+    
     /**
      * @brief Retourne la position
      * @return
@@ -107,6 +115,18 @@ protected:
     unsigned int initTime = 0;
 
     SerialCoderManager * m_codeurs;
+
+
+    // Constants for stuck calcul
+    inline static int TIME_BEFORE_STUCK_MS = 200;
+    inline static int MOTOR_SPEED_FOR_STUCK = 40;
+    inline static float MIN_VEL_FOR_STUCK = 0.05;
+    inline static float MIN_ANG_FOR_STUCK = 0.4;   
+    inline static int UNSTUCK_GRACE_TIME = 2000;
+
+    // Timer for stuck calcul
+    int stuckTimer = 0;
+    int unStuckTimer = 0;
 
 };
 

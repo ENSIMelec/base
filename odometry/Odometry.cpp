@@ -169,3 +169,33 @@ void Odometry::distance_total_update(int long ticksLeft, int long ticksRight) {
     totalAngle += m_dTheta;
 }
 
+bool Odometry::isStuck(int motorRSpeed, int motorLSpeed){
+    cout << " [STUCK DEBUG] : motorSpeeds(R/L) : " << motorRSpeed << " " << motorLSpeed << " | linVel : " << m_linVel << " | Timer : " << millis() << " | Stop timer : " << stuckTimer << endl;
+    if(millis() < unStuckTimer){
+        stuckTimer = millis() + TIME_BEFORE_STUCK_MS;
+        cout << " ======== Grace time, so not stuck ^^ ========= " << endl;
+        return false;
+    }
+    if(motorRSpeed == 0 && motorLSpeed == 0 && millis() >= stuckTimer){
+        cout << " ======== Motor stopped, so I'm stuck ========= " << endl;
+        return true;
+    }
+    if(motorRSpeed >= MOTOR_SPEED_FOR_STUCK || motorLSpeed >= MOTOR_SPEED_FOR_STUCK){
+        if(m_linVel < MIN_VEL_FOR_STUCK && m_angVel < MIN_ANG_FOR_STUCK){
+            if(millis() >= stuckTimer){
+                cout << " ======== Stuck !!! =========== " << endl;
+                return true;
+            }
+        }else{
+            stuckTimer = millis() + TIME_BEFORE_STUCK_MS;
+        }
+    }else{
+        stuckTimer = millis() + TIME_BEFORE_STUCK_MS;
+    }
+    cout << " ======== Not stuck =========== " << endl;
+    return false;
+}
+
+void Odometry::unStuck(int graceTime){
+    unStuckTimer = millis() + graceTime;
+}
