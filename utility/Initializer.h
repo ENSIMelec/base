@@ -11,10 +11,11 @@
 #include "../actuators/ActionManager.h"
 #include "../odometry/Odometry.h"
 #include "Configuration.h"
+#include "../strategy/Strategy.h"
 #include <thread>
 
 using namespace std;
-const string RESOURCES_PATH = "/home/pi/Documents/Kiroulpa/res/";
+const string RESOURCES_PATH = "../res/";
 
 class Initializer {
 public:
@@ -28,13 +29,17 @@ public:
     static MotorManager * getMotorManager() {return motorManager;}
     static Controller * getController() {return controller;}
     static ActionManager * getActionManager() {return actionManager;}
+    static SerialCoderManager * getSerialCoderManager() {return odometry->getSerialCoderManager();}
+    static Strategy * getStrategy() {return strategy;}
 
+    // ----- Setters -----
+    static void setStrategy(Strategy * s) {strategy = s;}
 private:
-
     inline static MotorManager *motorManager = nullptr;
     inline static Odometry *odometry = nullptr;
     inline static Controller *controller = nullptr;
     inline static ActionManager *actionManager = nullptr;
+    inline static Strategy *strategy = nullptr;
 
     inline static thread * lidarThread;
     inline static int activateLidar;
@@ -52,6 +57,7 @@ private:
 protected:
     inline static bool allowLogging;
     inline static Configuration *configuration = nullptr;
+
 };
 
 #endif //KRABBS_INITIALIZE_H

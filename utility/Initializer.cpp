@@ -7,7 +7,7 @@
 #include "Initializer.h"
 #include "../Lidar.h"
 #include "../../ResistanceReader.h"
-
+#include "../ui/UI.h"
 
 #define EXIT_FAIL_I2C 1
 
@@ -23,6 +23,7 @@ Configuration * Initializer::start(bool log) {
     initMotorManager();
     initController();
     initActionManager();
+    UI::init();
 
     return configuration;
 }
@@ -82,15 +83,18 @@ void Initializer::initController() {
 void Initializer::initActionManager() {
     if(allowLogging) cout << "Initializing the action manager ... ";
     int nbAx12 = configuration->getInt("global.nb_AX12");
+
     actionManager = new ActionManager(servos_fd, nbAx12, RESOURCES_PATH + "actions/");
 
     // Initialize the motors in the startup location
-    actionManager->action("initialize.as");
+    if(nbAx12 > 0) actionManager->action("initialize.as");
 
     if(allowLogging) cout << "done" << endl;
 }
 
 void Initializer::end() {
+    endwin();
+
     if(allowLogging) cout << "Quitting the application ... ";
     if(controller != nullptr) controller->stopMotors();
 
