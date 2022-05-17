@@ -80,6 +80,8 @@ public:
     void setTheta(float theta) {m_pos.theta = theta;}
     double getTheta() const {return m_pos.theta;}
 
+    SerialCoderManager *getSerialCoderManager() {return m_codeurs;}
+
 protected:
     Location m_pos; /*!< Structure de position de Odometry. */
 

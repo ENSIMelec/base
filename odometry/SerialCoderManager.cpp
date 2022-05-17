@@ -16,7 +16,7 @@ SerialCoderManager::SerialCoderManager()
             initSuccess = true;
 
             serialFlush(encoders_fd);
-            cout << endl << "\tConnected to /dev/ttyUSB" << i << ", ";
+//            cout << endl << "\tConnected to /dev/ttyUSB" << i << ", ";
             break;
         };
     }
@@ -92,6 +92,8 @@ void SerialCoderManager::readAndReset() {
     }
 
 #ifdef DEBUG_SERIAL_CODER_MANAGER
+    printBuffer(buffer);
+
     unsigned int endTime = millis();
     cout << "[SerialCoderManager] Elapsed time : " << (endTime - startTime) << endl;
 #endif

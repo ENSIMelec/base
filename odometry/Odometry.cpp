@@ -3,7 +3,7 @@
 using namespace std;
 
 //#define DEBUG_ODOMETRY
-#define INIT_TIME 2000
+#define INIT_TIME 1500
 
 /**
  * Odométrie
@@ -63,7 +63,6 @@ void Odometry::update() {
     // calculer la distance de effectué par chaque roue
     float distanceLeft = ticksLeft * (PERIM_ROUE / RESOLUTION);
     float distanceRight = ticksRight * ((COEF_CORRECTEUR * PERIM_ROUE) / RESOLUTION);
-
 
     // Calculer les variations de position en distance et en angle
 
@@ -154,7 +153,7 @@ void Odometry::debug() {
 //    cout << "[DATA CODEUR][TOTAL TICS] : Gauche:" << getTotalTicksL() << " Droit: " << getTotalTicksR() << endl;
 //    cout << "[DATA CODEUR][LAST TIME] : " << getLastTime() << " (ms)" << endl;
     cout << "[ODOMETRY][POSITION] X:" << m_pos.x << "\tY: " << m_pos.y;
-    cout << "\tTheta: " << angleDeg << "° (" << MathUtils::normalAngleRange(angleDeg, false) << "°)" << endl;
+    cout << "\tTheta: " << angleDeg << "° (" << MathUtils::normalizeAngle(angleDeg, false) << "°)" << endl;
 //    cout << "[ODOMETRY][DISTANCE PARCOURU EN LASTTIME (mm)] : " << getDeltaDistance() << endl;
 //    cout << "[ODOMETRY][ROTATION EFFECTUE EN LASTTIME (rad)] : " << getDeltaOrientation() << endl;
     cout << "[ODOMETRY][VITESSE]: Vitesse angulaire (rad/s) : " << getAngVel() << " Vitesse Linéaire (mm/s) : " << getLinVel() << endl;
@@ -169,3 +168,4 @@ void Odometry::distance_total_update(int long ticksLeft, int long ticksRight) {
     totalDistance += m_dDistance;
     totalAngle += m_dTheta;
 }
+

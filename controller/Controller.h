@@ -30,29 +30,23 @@ public:
     void update();
 
     void setTargetXY(int x, int y);
-    void setTargetAngle(double angle);
 
     void stopMotors();
     bool isTargetReached();
 
-    void setTargetPoint(Point* point);
-
     void debug();
 
+    // ---------- Getters & Setters -----
     void setNextPoint(Point *point);
+    Point * getCurrentPoint() {return currentPoint;}
 
+    [[nodiscard]] double getDistCommand() const {return command.distance;}
+    [[nodiscard]] double getAngleCommand() const {return command.angle;}
+    [[nodiscard]] int getPWMLeft() const {return pwm.left;}
+    [[nodiscard]] int getPWMRight() const {return pwm.right;}
+    [[nodiscard]] double getDistanceError();
+    [[nodiscard]] double getAngleError();
 private:
-
-    enum TrajectoryType {
-        XY,
-        ANGLE,
-        NONE
-    };
-    TrajectoryType currentTrajectoryType = NONE;
-
-    // Correctors
-    double Pk_angle = 1;
-    double Pk_distance = 1;
 
     // Target location
     Location targetPosition;
@@ -63,6 +57,9 @@ private:
 
     double calculateAngleError();
     double calculateDistanceError();
+    void calculateAngleCommands();
+    void calculateDistanceCommands();
+    void correctAngle();
 
     struct {
         double angle = 0;
@@ -76,16 +73,8 @@ private:
 
     Point * currentPoint;
 
-    double accelerationFactor = 0;
-    double accelerationCoeff;
-
-    void calculateAngleCommands();
-
     bool angleIsCorrect = false;
     double targetAngle = 0;
-
-    void calculateDistanceCommands();
-    void correctAngle();
 
     MovementController * movementController;
     AngleController * angleController;

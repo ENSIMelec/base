@@ -25,10 +25,10 @@ vector<struct Objective *> * StrategyParser::readObjectives(const string& path, 
     ifstream strategyFile;
     strategyFile.open(path + strategyFileName);
     if(strategyFile.fail()) {
-        cout << strategyFileName << " was not successfully opened.\nCheck that the file currently exists." << endl;
+        cout << strategyFileName<< " was not successfully opened.\nCheck that the file currently exists." << endl;
         StrategyParser::status = FILE_OPENING_ERROR;
     } else {
-        cout << "Successfully opened " << strategyFileName << endl;
+//        cout << "Successfully opened " << strategyFileName << endl;
     }
 
     string line;
@@ -56,8 +56,8 @@ vector<struct Objective *> * StrategyParser::readObjectives(const string& path, 
 
         // Create a new objective
         else if(line.find('[') != string::npos) {
-            string objName = line.substr(1, line.find(']') - 1);
-            StrategyParser::currentObjective = new Objective(objName);
+            auto * objName = new string(line.substr(1, line.find(']') - 1));
+            StrategyParser::currentObjective = new Objective(objName->c_str());
 
             if(line.find("@facultatif") != string::npos){
                 StrategyParser::currentObjective->setOptional(true);

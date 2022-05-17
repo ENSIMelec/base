@@ -7,8 +7,8 @@ using namespace std;
 
 #include "Objective.h"
 
-Objective::Objective(string name) {
-    this->name = std::move(name);
+Objective::Objective(const char * n) {
+    name = n;
 }
 
 void Objective::setOptional(bool optional) {

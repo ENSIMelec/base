@@ -24,38 +24,32 @@ PID::PID(double kp, double ki, double kd, double min, double max) {
  * @param timestep
  * @return
  */
-double PID::compute(float currentState, float consigne) {
-
-    // Ecart entre la consigne et la mesure
-    double error = consigne - currentState;
+double PID::compute(double error) {
 
     // Proportional term
-    double Pout = m_kp * error;
-
-    //cout << " ERROR : " << error << endl;
-    //cout << " ERROR Pout (kp*error): " << Pout << endl;
+    double proportionalOut = m_kp * error;
 
     // Integral term
     this->m_integral += error;
-    double Iout = m_ki * this->m_integral;
+    double integralOut = m_ki * this->m_integral;
 
     // Derivative term
     this->m_derivative = error - m_pre_error;
-    double Dout = m_kd * this->m_derivative;
+    double derivativeOut = m_kd * this->m_derivative;
 
     // Compute the PID controller's output
-    double output = Pout + Iout + Dout;
+    double output = proportionalOut + integralOut + derivativeOut;
 
     // Restrict to max/min
     if(output > m_max )
         output = m_max;
-    else if( output < m_min )
+    else if(output < m_min )
         output = m_min;
 
     // Save error to previous error
     this->m_pre_error = error;
 
-    // Returns the manipulated variable given a setpoint and current process value
+    // Returns the manipulated variable given a set point and current process value
     return output;
 }
 
@@ -68,21 +62,9 @@ void PID::setTunings(float kp, float ki, float kd) {
     this->m_kd = kd;
 }
 
-void PID::resetErrors() {
+void PID::reset() {
     this->m_pre_error = 0;
     this->m_integral = 0;
     this->m_derivative = 0;
-}
-
-float PID::getCurrentGoal() const {
-    return m_goal;
-}
-
-void PID::setGoal(float goal) {
-    this->m_goal = goal;
-}
-
-double PID::getDeltaError() {
-    return m_derivative;
 }
 

@@ -11,42 +11,24 @@
 
 class PID {
 public:
-
-
     PID(): m_kp(0), m_ki(0), m_kd(0), m_min(0), m_max(0) {};
     PID(double kp, double ki, double kd, double min, double max);
 
-    double compute(float input, float consigne);
+    double compute(double error);
     void setTunings(float kp, float ki, float kd);
-    void resetErrors();
-
-    float getCurrentGoal() const;
-    void setGoal(float mGoal);
-    int getError() const { return m_pre_error; };
-
-
-    double getDeltaError();
+    void reset();
 
 private:
-    double m_goal;
+    double m_kp; /** Proportional gain */
+    double m_ki; /** Integral gain */
+    double m_kd; /** derivative gain */
 
-    // m_kp -  proportional gain
-    // m_ki -  Integral gain
-    // m_kd -  derivative gain
-    // timestep -  loop interval time
+    double m_min; /** Minimum value of manipulated variable */
+    double m_max; /** Maximum value of manipulated variable */
 
-    double m_kp;
-    double m_ki;
-    double m_kd;
-
-    // m_min - maximum value of manipulated variable
-    // m_max - minimum value of manipulated variable
-    double m_min, m_max;
-
-    double m_pre_error   = 0;
-    double m_derivative  = 0;
-    double m_integral    = 0;
-
+    double m_integral{};
+    double m_derivative{};
+    double m_pre_error{};
 };
 
 

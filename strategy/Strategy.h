@@ -18,15 +18,17 @@ public:
     Strategy(const string& path, const string& name);
     void logObjectives();
 
-    bool isDone() const {return strategyIsDone;}
-    Point * getNextPoint();
-
-    Point *getCurrentPoint();
-
-    Objective * getCurrentObjective() {return currentObjective;}
+    // ---------- Getters ----------
+    [[nodiscard]] bool isDone() const {return strategyIsDone;}
+    [[nodiscard]] Point * getNextPoint();
+    [[nodiscard]] Point *getCurrentPoint();
+    [[nodiscard]] Objective * getCurrentObjective() {return currentObjective;}
+    [[nodiscard]] const char * getName() const {return name;}
 
 private:
+    const char * name;
     int currentObjectiveIndex = 0;
+
     Objective * currentObjective;
     vector<Objective *> * objectives;
 

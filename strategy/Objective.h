@@ -15,20 +15,21 @@ class Objective {
 
 public:
     Objective() = default;
-    explicit Objective(string name);
+    explicit Objective(const char * name);
 
     void setOptional(bool anOptional);
     void addPoint(Point * point);
 
     void logInfos();
 
-    Point *getNextPoint();
-    bool isDone() const {return done;}
-    string getName() const {return name;}
-
-    Point * getCurrentPoint() {return currentPoint;}
+    [[nodiscard]] Point *getNextPoint();
+    [[nodiscard]] int getPointIndex() const {return currentPointIndex;}
+    [[nodiscard]] bool isDone() const {return done;}
+    [[nodiscard]] const char * getName() const {return name;}
+    [[nodiscard]] Point * getCurrentPoint() {return currentPoint;}
+    [[nodiscard]] int getNbPoints() const {return (int) points.size();}
 private:
-    string name;
+    const char * name = nullptr;
     bool optional = false;
 
     bool done = false;

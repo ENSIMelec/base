@@ -7,12 +7,11 @@ ActionManager::ActionManager(int i2c_Servos, int nbAX12, const string& actionsPa
     path = actionsPath;
 
 	servoManager.servoInitialisation();
-	printf("Constructeur action");
 }
 
 
 void ActionManager::close() {
-	cout << "Arrêt du lanceur" << endl;
+//	cout << "Arrêt du lanceur" << endl;
 	sleepMillis(250);
 	ax12Manager.close();
 	return;
@@ -60,7 +59,7 @@ void ActionManager::action(const string& filename) {
 		}
 		if(tempsAction > 0)
 		{
-			cout << "Attente " << tempsAction << " ms" << endl;
+//			cout << "Attente " << tempsAction << " ms" << endl;
 			sleepMillis(tempsAction);
 		}
 		indexAction++;

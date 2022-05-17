@@ -69,7 +69,7 @@ void Lidar::stop(){
 
 
 bool Lidar::test(){
-	println("Test du lidar en cours...");
+//	println("Test du lidar en cours...");
 	serialFlush(serialID);
 	start();
 	delay(2000);
@@ -78,7 +78,7 @@ bool Lidar::test(){
 	delay(1000);
 	printf("[Lidar] : %s\n", ret ? "Le lidar semble fonctionnel" : "Le lidar ne semble pas fonctionnel...");
 	serialFlush(serialID);
-	println("Test du lidar terminé");
+//	println("Test du lidar terminé");
 	return ret;
 }
 

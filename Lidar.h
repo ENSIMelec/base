@@ -15,7 +15,7 @@
 
 
 // A décommenter si vous voulez que le debug du lidar soit actif. Le debug va écrire dans la console à chaque évenement jugé important mais non gênant.
-#define LIDAR_DEBUG
+//#define LIDAR_DEBUG
 
 
 

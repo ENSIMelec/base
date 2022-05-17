@@ -8,11 +8,12 @@ using namespace std;
 #include "Strategy.h"
 #include "StrategyParser.h"
 
-Strategy::Strategy(const string& path, const string& name) {
-    objectives = StrategyParser::readObjectives(path, name);
+Strategy::Strategy(const string& path, const string& n) {
+    name = n.c_str();
+    objectives = StrategyParser::readObjectives(path + n + "/", "main.strategy");
 
     if(StrategyParser::getStatus() == EXIT_SUCCESS) {
-        cout << "Successfully loaded the strategy with " << objectives->size() << " objectives !" << endl;
+//        cout << "Successfully loaded the strategy with " << objectives->size() << " objectives !" << endl;
     } else {
         cout << "Unable to load the strategy ..." << endl;
         return;

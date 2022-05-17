@@ -31,7 +31,7 @@ int AX12Manager::initialisation() {
 	// Open port
 	if (portHandler->openPort())
 	{
-		printf("Succeeded to open the port!\n");
+//		printf("Succeeded to open the port!\n");
 	}
 	else
 	{
@@ -43,7 +43,7 @@ int AX12Manager::initialisation() {
 	// Set port baudrate
 	if (portHandler->setBaudRate(BAUDRATE))
 	{
-		printf("Succeeded to change the baudrate!\n");
+//		printf("Succeeded to change the baudrate!\n");
 	}
 	else
 	{
@@ -67,7 +67,7 @@ int AX12Manager::initialisation() {
 		}
 		else
 		{
-			printf("Dynamixel %i has been successfully connected \n", index_ID);
+//			printf("Dynamixel %i has been successfully connected \n", index_ID);
 		}
 		/*
 		As mentioned in the document, above code enables Dynamixel torque to set its status as being ready to move.
@@ -104,14 +104,14 @@ void AX12Manager::close() {
 		Then, it receives the dxl_error. The function returns 0 if no communication error has been occurred.
 		*/
 	}
-	std::cout << "Close port ax12Manager" << std::endl;
+//	std::cout << "Close port ax12Manager" << std::endl;
 	portHandler->closePort();
 }
 
 int AX12Manager::AX12Action(int numActionneur, int angleAction, int forceAction) {
 	timer temps;
 
-	std::cout << "Numéro ax12Manager ID : " << numActionneur << std::endl;
+//	std::cout << "Numéro ax12Manager ID : " << numActionneur << std::endl;
 	int dxl_id = numActionneur;
 	int dxl_goal_position = angleAction;
 

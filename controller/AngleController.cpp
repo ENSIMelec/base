@@ -26,16 +26,15 @@ void AngleController::calculateCommands(double theta) {
         accelerationFactor = 1;
     }
 
-    double angleError = targetAngle - theta;
-//    angleCommand = angleError * Pk_angle * accelerationFactor;
+    angleError = targetAngle - theta;
 
-    angleCommand = pid->compute(theta, targetAngle);
+    angleCommand = pid->compute(angleError);
     angleCommand *= accelerationFactor;
+}
 
-
-//    cout << "[ANGLE CONTROLLER] Angle error : " << angleError << endl;
-//    cout << "[ANGLE CONTROLLER] Angle command : " << angleCommand << endl;
-
+void AngleController::setTargetAngle(double theta) {
+    targetAngle = theta;
+    pid->reset();
 }
 
 bool AngleController::isTargetReached() const {

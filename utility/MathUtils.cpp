@@ -41,10 +41,24 @@ float MathUtils::millis2sec(double millis) {
 
 /**
  * Return an angle value between -180 and 180
- * @param angle
+ * @param angle Between -infinity and +infinity
  * @return
  */
-double MathUtils::normalAngleRange(double angle, bool inRad) {
+double MathUtils::normalizeAngle(double angle, bool inRad) {
     double base = (inRad) ? M_PI : 180;
-    return fmod(angle, base);
+
+    int q = (int) (abs(angle) / base);
+    double r = fmod(abs(angle), base);
+
+    double sign = (angle < 0) ? -1 : 1;
+
+    double normalizedAngle = 0;
+    if((q % 2) == 0) {
+        normalizedAngle = sign * r;
+    } else {
+        normalizedAngle = -sign * (base - r);
+    }
+
+//    cout << "[MathUtils] Angle : " << angle << "\tNormalized Angle : " << normalizedAngle << endl;
+    return normalizedAngle;
 }

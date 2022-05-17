@@ -26,9 +26,9 @@ void Controller::update() {
     command.angle = 0;
 
     Location currentLocation = odometry->getLocation();
-    double x = currentLocation.x;
-    double y = currentLocation.y;
-    double theta = currentLocation.theta;
+    double x = odometry->getX();
+    double y = odometry->getY();
+    double theta = odometry->getTheta();
 
     switch (currentPoint->getType()) {
         case PointType::MOVE_TO_POSITION:
@@ -48,9 +48,11 @@ void Controller::update() {
     pwm.right = (int) (command.distance + command.angle);
 
     // Set the orders
-    if(activateMotors != 0) motorManager->setOrder(pwm.left, pwm.right);
+    if(activateMotors != 0) {
+        motorManager->setOrder(pwm.left, pwm.right);
+    }
     else {
-        cout << "Motors are deactivated !" << endl;
+//        cout << "Warning : Motors are deactivated !" << endl;
     }
 }
 
@@ -68,36 +70,13 @@ void Controller::debug() {
 #endif
 }
 
-void Controller::calculateDistanceCommands() {
-    double distanceError = calculateDistanceError();
-
-    double cmd = distanceError * Pk_distance * accelerationFactor;
-    cmd = MathUtils::constrain(cmd, 0, 70);
-
-    command.distance = cmd;
-    cout << "[Calculate Distance Commands] Command : " << command.distance << endl;
-}
-
-void Controller::calculateAngleCommands() {
-    double angleError = targetAngle - odometry->getTheta();
-//    double angleError = calculateAngleError();    // Needed in continuous ?
-
-    command.angle = angleError * Pk_angle * accelerationFactor;
-    cout << "[Calculate Angle Commands] Command Left : " << - command.angle << "\tCommand Right : " << command.angle << endl;
-}
-
-void Controller::setTargetXY(int x, int y) {
-    targetPosition.x = x;
-    targetPosition.y = y;
-
-    targetAngle = calculateAngleError();
-    angleIsCorrect = false;
+void Controller::stopMotors() {
+    pwm.left = 0;
+    pwm.right = 0;
 
     command.angle = 0;
     command.distance = 0;
-}
 
-void Controller::stopMotors() {
     motorManager->stop();
 }
 
@@ -169,10 +148,46 @@ double Controller::calculateDistanceError() {
     return sqrt(dX * dX + dY * dY);
 }
 
-void Controller::correctAngle() {
-    double angleError = calculateAngleError();
+double Controller::getDistanceError() {
+    switch (currentPoint->getType()) {
+        case POSITION:
+            break;
+        case MOVE_TO_POSITION:
+            return movementController->getDistanceError();
+            break;
+        case RECALAGE_X:
+            break;
+        case RECALAGE_Y:
+            break;
+        case RECALAGE_XY:
+            break;
+        default:
+            return 0;
+    }
 
-    command.angle = Pk_angle * angleError * accelerationFactor;
+    return 0;
 }
 
+double Controller::getAngleError() {
+    switch (currentPoint->getType()) {
+        case POSITION:
+            break;
+        case ANGLE:
+            return angleController->getAngleError();
+            break;
+        case MOVE_TO_POSITION:
+            return movementController->getAngleError();
+            break;
+        case RECALAGE_X:
+            break;
+        case RECALAGE_Y:
+            break;
+        case RECALAGE_XY:
+            break;
+        default:
+            return 0;
+    }
+
+    return 0;
+}
 

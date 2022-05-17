@@ -5,7 +5,6 @@
 #ifndef KRABBS_ANGLECONTROLLER_H
 #define KRABBS_ANGLECONTROLLER_H
 
-
 #include "../utility/Configuration.h"
 #include "PID.h"
 
@@ -15,25 +14,23 @@ public:
     explicit AngleController(Configuration * configuration);
 
     void calculateCommands(double theta);
-    double getAngleCommand() const {return angleCommand;}
+    [[nodiscard]] double getAngleCommand() const {return angleCommand;}
+    [[nodiscard]] double getAngleError() const {return angleError;}
+    [[nodiscard]] bool isTargetReached() const;
 
-    void setTargetAngle(double theta) {targetAngle = theta;}
-
-    bool isTargetReached() const;
-
+    void setTargetAngle(double theta);
 private:
-    double angleCommand;
-    double targetAngle;
-    double currentAngle;
+    double angleCommand{};
+    double targetAngle{};
+    double currentAngle{};
+    double angleError = 0;
 
     PID * pid;
 
-
-    double accelerationFactor;
+    double accelerationFactor{};
     double acceleration;
 
     double angleThreshold;
-
 };
 
 

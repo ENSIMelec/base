@@ -11,11 +11,11 @@ vector<ActionServo> FichierAction::readPoints(string filename){
 	int force;
 	int time;
 	ifstream file(filename);
-	printf("Ouverture Action : [%s]\n",filename.c_str());
-	printf("fichier ok : %d\n",file.good());
-	printf("fichier fini : %d\n",file.eof());
-	printf("fichier fail : %d\n",file.fail());
-	printf("fichier bad : %d\n",file.bad());
+//	printf("Ouverture Action : [%s]\n",filename.c_str());
+//	printf("fichier ok : %d\n",file.good());
+//	printf("fichier fini : %d\n",file.eof());
+//	printf("fichier fail : %d\n",file.fail());
+//	printf("fichier bad : %d\n",file.bad());
 	bool bloc_com = false;
 
 	while(file.good()){
@@ -25,23 +25,23 @@ vector<ActionServo> FichierAction::readPoints(string filename){
 		if(tmpString.find("/*") != string::npos)
 		{
 			bloc_com = true;
-			cout << "Bloc commentaire: " << tmpString << "\n";
+//			cout << "Bloc commentaire: " << tmpString << "\n";
 			continue;
 		}
 		else if(tmpString.find("*/") != string::npos && bloc_com)
 		{
 			bloc_com = false;
-			cout << "Bloc commentaire: " << tmpString << "\n";
+//			cout << "Bloc commentaire: " << tmpString << "\n";
 			continue;
 		}
 		else if(bloc_com)
 		{
-			cout << "Bloc commentaire: " << tmpString << "\n";
+//			cout << "Bloc commentaire: " << tmpString << "\n";
 			continue;
 		}
 		else if(countSubstring(tmpString, " ") < 3)
 		{
-			cout << "Ligne invalide: " << tmpString << "\n";
+//			cout << "Ligne invalide: " << tmpString << "\n";
 			continue;
 		}
 		else if(tmpString.find("#") != string::npos
@@ -49,11 +49,11 @@ vector<ActionServo> FichierAction::readPoints(string filename){
 			|| tmpString.find("--") != string::npos
 			|| tmpString.find("%") != string::npos)
 		{
-			cout << "Commentaire isolé: " << tmpString << "\n";
+//			cout << "Commentaire isolé: " << tmpString << "\n";
 			continue;
 		}
 
-		cout << "Action: " << tmpString << "\n";
+//		cout << "Action: " << tmpString << "\n";
 
 		read >> type;
 		read >> numero;
