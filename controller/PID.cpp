@@ -53,7 +53,7 @@ double PID::compute(double error) {
     return output;
 }
 
-void PID::setTunings(float kp, float ki, float kd) {
+void PID::setTunings(double kp, double ki, double kd) {
     if (kp < 0 || ki < 0 || kd < 0)
         return;
 
@@ -66,5 +66,10 @@ void PID::reset() {
     this->m_pre_error = 0;
     this->m_integral = 0;
     this->m_derivative = 0;
+}
+
+void PID::setMinMax(double min, double max) {
+    m_min = min;
+    m_max = max;
 }
 

@@ -15,8 +15,10 @@ public:
     PID(double kp, double ki, double kd, double min, double max);
 
     double compute(double error);
-    void setTunings(float kp, float ki, float kd);
+    void setTunings(double kp, double ki, double kd);
     void reset();
+
+    void setMinMax(double min, double max);
 
 private:
     double m_kp; /** Proportional gain */
