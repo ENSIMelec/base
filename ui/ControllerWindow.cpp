@@ -16,7 +16,7 @@ void ControllerWindow::display() {
     currentPoint = controller->getCurrentPoint();
     pointType = currentPoint->getType();
 
-    mvwprintw(win, 1, 1, "Point type : %s            ", getPointTypeStr());
+    mvwprintw(win, 1, 1, "Point type : %s   ", getPointTypeStr());
     displayPointInformation();
 
     mvwprintw(win, 6, 1, "Dist cmd : %.0f   Angle cmd : %.0f   ", controller->getDistCommand(), controller->getAngleCommand());
@@ -30,22 +30,23 @@ void ControllerWindow::displayPointInformation() {
 
     switch (pointType) {
         case PointType::MOVE_TO_POSITION:
+        case PointType::MOVE_TO_POSITION_RELATIVE_TO_ANGLE:
+        case STATIC_POSITION:
             mvwprintw(win, 2, 1, "X: %.0f   Y: %.0f   ", currentPoint->getX(), currentPoint->getY());
             mvwprintw(win, 3, 1, "Angle error : %.2f (%.2f)  ", angleError, angleError_deg);
             mvwprintw(win, 4, 1, "Dist error : %.0f   ", distanceError);
             break;
-        case POSITION:
-            break;
+        case ABSOLUTE_ANGLE:
         case ANGLE:
             mvwprintw(win, 2, 1, "θ: %.5f (%.2f°)  ", currentPoint->getTheta(), MathUtils::rad2deg(currentPoint->getTheta()));
             mvwprintw(win, 3, 1, "Angle error : %.2frad  (%.2f°)  ", angleError, angleError_deg);
             break;
-        case RECALAGE_X:
+        case SET_X:
+        case SET_Y:
+        case SET_XY_THETA:
             break;
-        case RECALAGE_Y:
-            break;
-        case RECALAGE_XY:
-            break;
+        case WAIT:
+            mvwprintw(win, 2, 1, "Time : %f", currentPoint->getWaitingTime());
         default:
             return;
     }
@@ -54,19 +55,25 @@ void ControllerWindow::displayPointInformation() {
 const char *ControllerWindow::getPointTypeStr() {
     switch (pointType) {
         case PointType::MOVE_TO_POSITION:
-            return "MoveToPosition";
+            return "Move to position";
+        case PointType::ABSOLUTE_ANGLE:
+            return "Absolute angle";
+        case STATIC_POSITION:
+            return "Static position";
+        case RELATIVE_ANGLE:
+            return "Relative angle";
+        case SET_X:
+            return "Set X";
+        case SET_Y:
+            return "Set Y";
+        case SET_XY_THETA:
+            return "Set X, Y & Theta";
+        case PointType::MOVE_TO_POSITION_RELATIVE_TO_ANGLE:
+            return "Move relative to angle";
+        case PointType::WAIT:
+            return "Wait";
         case PointType::ANGLE:
             return "Angle";
-        case POSITION:
-            return "Position";
-        case ANGLE_RELATIF:
-            break;
-        case RECALAGE_X:
-            break;
-        case RECALAGE_Y:
-            break;
-        case RECALAGE_XY:
-            break;
         default:
             return "Undefined";
     }

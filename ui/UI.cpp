@@ -7,9 +7,6 @@
 #include "ControllerWindow.h"
 #include "StrategyWindow.h"
 #include "SerialCoderManagerWindow.h"
-#include "ActionManagerWindow.h"
-#include "InformationWindow.h"
-#include "ConsoleWindow.h"
 
 void UI::init() {
 
@@ -19,6 +16,8 @@ void UI::init() {
     timeout(0);
 
     noecho();
+    keypad(stdscr, true);
+    cbreak();
     curs_set(0);
 
     start_color();
@@ -34,7 +33,24 @@ void UI::init() {
     // Getting the size of the current consoleWin window
     getmaxyx(stdscr, height, width);
 
-    components.push_back(new ConsoleWindow(0, height / 2, width, height / 2));
+    // The logger does not depend on any module
+    logger = new Logger(0, height / 2, width, height / 2);
+    components.push_back(logger);
+}
+
+void UI::update() {
+    int c = getch();
+    if(c == KEY_UP) {
+        logger->goUp();
+    } else if(c == KEY_DOWN) {
+        logger->goDown();
+    } else if(c == 'q') {
+        shouldQuit = true;
+    }
+}
+
+/** This function must be called after each module has been initialized */
+void UI::initModules() {
 
     // Left column
     components.push_back(new OdometryWindow(0, 1, width / 3, 5));
@@ -48,15 +64,28 @@ void UI::init() {
 //    components.push_back(new InformationWindow(width / 3, 10, 2 * width / 3, 5));
 }
 
+void UI::logAndRefresh(const char *s) {
+    WINDOW * win = logger->getWin();
+    box(win, 0, 0);
+    mvwprintw(win, 0, 2, logger->getName());
+
+    logger->println(new string(s));
+
+    logger->display();
+    wrefresh(win);
+    refresh();
+}
+
 void UI::display() {
 
     for(ComponentWindow* c : components) {
         WINDOW * win = c->getWin();
-        box(win, 0, 0);
 
         // Display component title
         mvwprintw(win, 0, 2, "%s", c->getName());
         c->display();
+
+        box(win, 0, 0);
 
         // Refresh the window
         wrefresh(win);
@@ -64,4 +93,21 @@ void UI::display() {
 
     // Refresh the whole console
     refresh();
+}
+
+void UI::end() {
+    display();
+
+    curs_set(0);
+    attron(COLOR_PAIR(1));
+    printw(" press q to exit ...");
+    attroff(COLOR_PAIR(1));
+
+    refresh();
+    while(UI::shouldQuit) {
+        UI::update();
+        UI::display();
+    }
+
+    endwin();
 }
