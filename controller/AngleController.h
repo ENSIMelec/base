@@ -18,19 +18,29 @@ public:
     [[nodiscard]] double getAngleError() const {return angleError;}
     [[nodiscard]] bool isTargetReached() const;
 
-    void setTargetAngle(double theta);
+    void setAbsoluteTargetAngle(double theta);
+    void setTargetAngle(double currentAngle, double destAngle);
+
 private:
     double angleCommand{};
     double targetAngle{};
     double currentAngle{};
     double angleError = 0;
 
-    PID * pid;
-
     double accelerationFactor{};
     double acceleration;
 
     double angleThreshold;
+
+    PID * pid;
+    double Pk_small;
+    double Pi_small;
+    double Pd_small;
+    double Pk_big;
+    double Pi_big;
+    double Pd_big;
+
+    void resetPid();
 };
 
 

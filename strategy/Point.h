@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 #include "PointType.h"
+#include "../controller/MovementController.h"
 
 using namespace std;
 
@@ -39,8 +40,8 @@ public:
     void setAction(const string& p_action) { action = p_action;}
     string getAction() {return action;}
 
-    string getDirection() {return direction;}
-    void setDirection(string p_direction) { direction = std::move(p_direction);}
+    MovementController::Direction getDirection() {return direction;}
+    void setDirection(MovementController::Direction d) { direction = d;}
 
     void setActionAfterMovement(bool p_actionAfterMovement) { actionAfterMovement = p_actionAfterMovement;}
     bool isActionAfterMovement() const {return actionAfterMovement;}
@@ -66,21 +67,36 @@ public:
     double getDistanceThreshold() {return distanceThreshold;}
     void setDistanceThreshold(double p_distanceThreshold) { distanceThreshold = p_distanceThreshold;}
 
+    void setWaitingTime(double t) { waitingTime = t;}
+    double getWaitingTime() const {return waitingTime;}
+
     void logTargetInformation();
 
+    void setMaxSpeed(double s) {maxSpeed = s;}
+    double getMaxSpeed() const {return maxSpeed;}
 private:
+    /** Distance command max speed. -1 means default */
+    double maxSpeed = -1;
+
+    /** Timeout time. -1 means no timeout */
+    int timeout = -1;
+
+    /** For the waiting time, when type = "WAIT" */
+    double waitingTime = 0;
+
     float m_x{};
     float m_y{};
     float m_theta{};
     float m_angle_tolerance{};
     int speed{};
-    int timeout{};
     string action = "null";
     bool actionAfterMovement = true;
     string m_blocked;
     string m_commentary;
     PointType m_type;
-    string direction = "avant";
+
+    MovementController::Direction direction = MovementController::FORWARD;
+
     bool lissage = false;
     double coeffCourbe = 0;
     double deltaAngle;

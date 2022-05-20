@@ -25,6 +25,8 @@ MovementController::MovementController(Configuration * configuration) {
 
     distanceThreshold = configuration->getDouble("controller.movement.distance_threshold");
 
+    originalMaxSpeed = maxDistancePWM;
+
     pid_distance = new PID(Pk_distance, Pi_distance, Pd_distance, minDistancePWM, maxDistancePWM);
     pid_angle = new PID(Pk_angle, Pi_angle, Pd_angle, minAnglePWM, maxAnglePWM);
 }
@@ -54,6 +56,14 @@ void MovementController::calculateCommands(double x, double y, double theta) {
     if(distance < distanceThreshold) {
         targetReached = true;
     }
+
+    // Check if timeout is active
+    if(timeout > 0) {
+        if(timer.elapsed_ms() > (unsigned long long) timeout) {
+            targetReached = true;
+            timeout = -1;   // Disable the timeout for the next point
+        }
+    }
 }
 
 void MovementController::setTargetPosition(double x, double y) {
@@ -63,15 +73,23 @@ void MovementController::setTargetPosition(double x, double y) {
     accelerationFactor = 0;
 
     targetReached = false;
+    resetMaxSpeed();
 
     pid_angle->reset();
     pid_distance->reset();
+
+    timer.restart();
 }
 
 void MovementController::calculateAngleCommand(double dX, double dY, double theta) {
 
     const double base = M_PI;
     double dest_angle = calculateDestinationAngle(dX, dY);
+
+    // In case we are backward, we do the same calculations as forward but with opposite angle
+    if(direction == BACKWARD) {
+        theta += base;
+    }
 
     theta = MathUtils::normalizeAngle(theta);
 
@@ -93,7 +111,7 @@ void MovementController::calculateAngleCommand(double dX, double dY, double thet
 
     angleError = (abs(s1) < abs(s2)) ? s1 : s2;
 
-//    cout << "[ANGLE CALCULATION] Angle error : " << angleError << " (" << MathUtils::rad2deg(angleError) << "°)" << endl;
+//    cout << "[ABSOLUTE_ANGLE CALCULATION] Angle error : " << angleError << " (" << MathUtils::rad2deg(angleError) << "°)" << endl;
 
     // Adjust the command
     angleCommand = pid_angle->compute(angleError);
@@ -124,4 +142,12 @@ double MovementController::calculateDestinationAngle(double dX, double dY) {
     }
 
     return angleError;
+}
+
+void MovementController::setMaxSpeed(double max) {
+    pid_distance->setMinMax(-max, max);
+}
+
+void MovementController::resetMaxSpeed() {
+    pid_distance->setMinMax(-originalMaxSpeed, originalMaxSpeed);
 }

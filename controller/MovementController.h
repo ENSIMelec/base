@@ -7,11 +7,16 @@
 
 #include "../odometry/Odometry.h"
 #include "PID.h"
+#include "../utility/Clock.h"
 
 class MovementController {
-
 public:
-    MovementController(Configuration * configuration);
+    enum Direction {
+        FORWARD,
+        BACKWARD
+    };
+
+    explicit MovementController(Configuration * configuration);
 
     void calculateCommands(double x, double y, double theta);
     void setTargetPosition(double x, double y);
@@ -23,10 +28,20 @@ public:
     [[nodiscard]] double getAngleCommand() const {return angleCommand;}
     [[nodiscard]] double getDistanceError() const {return distanceError;}
     [[nodiscard]] double getAngleError() const {return angleError;}
+    [[nodiscard]] bool isTargetReached() const {return targetReached;};
 
-    bool isTargetReached() const {return targetReached;};
-
+    void setMaxSpeed(double max);
+    void setTimeout(int t) {timeout = t;}
+    void setDirection(Direction d) {direction = d;}
 private:
+
+    // Direction
+    Direction direction = FORWARD;
+
+    // Bypass the targetReached
+    int timeout = 0;
+    Clock timer;
+
     double distanceCommand = 0;
     double angleCommand = 0;
 
@@ -45,6 +60,9 @@ private:
 
     PID * pid_distance;
     PID * pid_angle;
+
+    void resetMaxSpeed();
+    double originalMaxSpeed;
 };
 
 

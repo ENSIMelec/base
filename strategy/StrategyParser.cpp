@@ -3,12 +3,7 @@
 //
 
 #include "StrategyParser.h"
-
-#include <iostream>
-#include <fstream>
-
 #include "../lib/json.hpp"
-#include "../utility/MathUtils.h"
 
 using json = nlohmann::json;
 
@@ -98,53 +93,50 @@ int StrategyParser::parseObjectivePoints(const string& path, const string& objFi
                 for (auto& [key, value] : j_point.items()) {
 
 //                    cout << key << ": " << value << endl;
-
-                    if(key == "X") {
+                    if (key == "X") {
                         point->setX(value);
-                    } else if(key == "Y") {
+                    } else if (key == "Y") {
                         point->setY(value);
-                    } else if(key == "angle") {
+                    } else if (key == "angle") {
                         point->setTheta(MathUtils::deg2rad(value));
-                    } else if(key == "action") {
+                    } else if (key == "action") {
                         point->setAction(value);
-                    } else if(key == "smooth_curve") {
-                        point->setSmoothCurve(value);
-                    } else if(key == "attAction") {
+                    } else if(key == "time") {
+                        point->setWaitingTime(value);
+                    }else if(key == "attAction") {
                         point->setActionAfterMovement(true);
                     } else if(key == "distance_threshold") {
                         point->setDistanceThreshold(value);
-                    } else if(key == "blocage") {
-                        point->setBlocage(value);
-                    } else if(key == "commentaire") {
-                        point->setCommentary(value);
-                    } else if(key == "kP_curve") {
-                        point->setKpCurve(value);
                     } else if(key == "type") {
-                        if(value == "Location") {
-                            point->setType(PointType::POSITION);
-                        } else if(value == "AngleRelatif") {
-                            point->setType(PointType::ANGLE_RELATIF);
+                        if(value == "StaticPosition") {
+                            point->setType(PointType::STATIC_POSITION);
+                        } else if(value == "RelativeAngle") {
+                            point->setType(PointType::RELATIVE_ANGLE);
+                        } else if(value == "AbsoluteAngle") {
+                            point->setType(PointType::ABSOLUTE_ANGLE);
                         } else if(value == "MoveToPosition") {
                             point->setType(PointType::MOVE_TO_POSITION);
-                        } else if(value == "DeplacementX") {
-                            point->setType(PointType::DEPLACEMENT_X);
-                        } else if(value == "DeplacementY") {
-                            point->setType(PointType::DEPLACEMENT_Y);
-                        } else if(value == "DeplaRelatif") {
-                            point->setType(PointType::DEPLA_RELATIF);
-                        } else if(value == "RecalageX") {
-                            point->setType(PointType::RECALAGE_X);
-                        } else if(value == "RecalageY") {
-                            point->setType(PointType::RECALAGE_Y);
-                        } else if(value == "RecalageXY") {
-                            point->setType(PointType::RECALAGE_XY);
+                        } else if(value == "MoveToPositionRelativeToAngle") {
+                            point->setType(PointType::MOVE_TO_POSITION_RELATIVE_TO_ANGLE);
+                        } else if(value == "SetX") {
+                            point->setType(PointType::SET_X);
+                        } else if(value == "SetY") {
+                            point->setType(PointType::SET_Y);
+                        } else if(value == "SetXYTheta") {
+                            point->setType(PointType::SET_XY_THETA);
+                        } else if(value == "Wait") {
+                            point->setType(PointType::WAIT);
+                        } else if(value == "Action") {
+                            point->setType(PointType::ACTION);
                         } else if(value == "Angle") {
                             point->setType(PointType::ANGLE);
                         }
-                    } else if(key == "vitesse") {
-                        point->setSpeed(value);
-                    } else if(key == "sens") {
-                        point->setDirection(value);
+                    } else if(key == "direction") {
+                        if(value == "backward") point->setDirection(MovementController::Direction::BACKWARD);
+                    } else if(key == "max_speed") {
+                        point->setMaxSpeed(value);
+                    } else if(key == "timeout") {
+                        point->setTimeout(value);
                     }
                 }
             }

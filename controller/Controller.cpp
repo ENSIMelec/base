@@ -1,5 +1,8 @@
 #include "Controller.h"
 
+#include <cmath>
+#include "../ui/UI.h"
+
 #define DEBUG_CONTROLLER
 //#define CSV_PRINT
 
@@ -14,10 +17,6 @@ Controller::Controller(MotorManager * motorManager_, Odometry * odometry_, Confi
 
     movementController = new MovementController(config_);
     angleController = new AngleController(config_);
-
-//    Pk_angle = config->getDouble("controller.translation.Pk_angle");
-//    Pk_distance = config->getDouble("controller.translation.Pk_distance");
-//    accelerationCoeff = config->getDouble("controller.acceleration_coeff");
 }
 
 void Controller::update() {
@@ -32,12 +31,18 @@ void Controller::update() {
 
     switch (currentPoint->getType()) {
         case PointType::MOVE_TO_POSITION:
+        case PointType::MOVE_TO_POSITION_RELATIVE_TO_ANGLE:
             movementController->calculateCommands(x, y, theta);
 
             command.angle = movementController->getAngleCommand();
             command.distance = movementController->getDistanceCommand();
+
+            if(currentPoint->getDirection() == MovementController::BACKWARD) {
+                command.distance *= -1;
+            }
+
             break;
-        case PointType::ANGLE:
+        case PointType::ABSOLUTE_ANGLE:
             angleController->calculateCommands(theta);
 
             command.angle = angleController->getAngleCommand();
@@ -64,7 +69,7 @@ void Controller::debug() {
 #ifdef DEBUG_CONTROLLER
     Location pos = odometry->getLocation();
 
-    cout << "[POSITION] X: " << pos.x << "\tY: " << pos.y << "\tTheta: " << pos.theta << "(" << MathUtils::rad2deg(pos.theta) << "°)" << endl;
+    cout << "[STATIC_POSITION] X: " << pos.x << "\tY: " << pos.y << "\tTheta: " << pos.theta << "(" << MathUtils::rad2deg(pos.theta) << "°)" << endl;
     cout << "[CONTROLLER][Commands] Distance : " << command.distance << "\tAngle : " << command.angle << endl;
     cout << "[CONTROLLER][PWM] Left : " << pwm.left << "\tRight : " << pwm.right << endl;
 #endif
@@ -83,83 +88,95 @@ void Controller::stopMotors() {
 void Controller::setNextPoint(Point * point) {
     currentPoint = point;
 
+    double xRobot = odometry->getX();
+    double yRobot = odometry->getY();
+    double thetaRobot = odometry->getTheta();
+    int timeout = point->getTimeout();
+    MovementController::Direction direction = point->getDirection();
+
+    double xRelative, yRelative, x, y;
+
     switch (point->getType()) {
         case PointType::MOVE_TO_POSITION:
             movementController->setTargetPosition(point->getX(), point->getY());
+            if(point->getMaxSpeed() > 0) movementController->setMaxSpeed(point->getMaxSpeed());
+            if(timeout > 0) movementController->setTimeout(timeout);
+            if(direction == MovementController::BACKWARD) movementController->setDirection(MovementController::BACKWARD);
+
+            break;
+        case PointType::MOVE_TO_POSITION_RELATIVE_TO_ANGLE:
+            xRobot = odometry->getX();
+            yRobot = odometry->getY();
+            thetaRobot = odometry->getTheta();
+
+            // The relative coordinates in the robot coordinate system relative to angle
+            xRelative = point->getX();
+            yRelative = point->getY();
+
+            x = xRelative * cos(thetaRobot) - yRelative * sin(thetaRobot) + xRobot;
+            y = xRelative * sin(thetaRobot) + yRelative * cos(thetaRobot) + yRobot;
+
+            movementController->setTargetPosition(x, y);
+            if(point->getMaxSpeed() > 0) movementController->setMaxSpeed(point->getMaxSpeed());
+            if(timeout > 0) movementController->setTimeout(timeout);
+            if(direction == MovementController::BACKWARD) movementController->setDirection(MovementController::BACKWARD);
+
+            break;
+        case PointType::ABSOLUTE_ANGLE:
+            angleController->setAbsoluteTargetAngle(point->getTheta());
             break;
         case PointType::ANGLE:
-            angleController->setTargetAngle(point->getTheta());
+            angleController->setTargetAngle(thetaRobot, point->getTheta());
+            break;
+        case PointType::RELATIVE_ANGLE:
+            break;
+        case PointType::SET_X:
+            odometry->setX(point->getX());
+            break;
+        case PointType::SET_Y:
+            odometry->setY(point->getY());
+            break;
+        case PointType::SET_XY_THETA:
+            odometry->setPosition(point->getX(), point->getY(), point->getTheta());
+            break;
+        case STATIC_POSITION:
+        case ACTION:
+            break;
+        case WAIT:
+            delay((unsigned int) point->getWaitingTime());
             break;
     }
 }
 
 bool Controller::isTargetReached() {
     switch (currentPoint->getType()) {
-        case PointType::MOVE_TO_POSITION:
+        case MOVE_TO_POSITION:
+        case MOVE_TO_POSITION_RELATIVE_TO_ANGLE:
             return movementController->isTargetReached();
-        case PointType::ANGLE:
+        case ABSOLUTE_ANGLE:
             return angleController->isTargetReached();
+        case WAIT:
+        case ACTION:
+            return true;
+        default:
+            return false;
     }
 
-    return true;
-}
-
-double Controller::calculateAngleError() {
-
-    // Calculate the angle error
-    Location currentPosition = odometry->getLocation();
-    double dX = targetPosition.x - currentPosition.x;
-    double dY = targetPosition.y - currentPosition.y;
-
-    double angleError = atan(dY / dX);
-//    double sign = (targetPosition.y > currentPosition.y) ? -1 : 1;
-//    double angleError = sign * acos(dX / (dX * dX + dY * dY));
-
-    // Only when the angle should be over 90°
-    if(dX < 0) {
-        if(dY > 0) angleError += M_PI;
-        if(dY < 0) angleError -= M_PI;
-    }
-
-    // Stay in the range -Pi, Pi
-    if(angleError < - M_PI) {
-        angleError += M_2_PI;
-    } else if(angleError > M_PI) {
-        angleError -= M_2_PI;
-    }
-
-    cout << "[ANGLE CALCULATION] dx : " << dX << " dy : " << dY << endl;
-    cout << "[ANGLE CALCULATION] Angle error : " << angleError << " (" << MathUtils::rad2deg(angleError) << "°)" << endl;
-//    cout << "[ANGLE CALCULATION] distance : " << sqrt(dX * dX + dY * dY) << endl;
-
-
-    return angleError - currentPosition.theta;
-}
-
-/**
- * Get the distance between the current location and target
- */
-double Controller::calculateDistanceError() {
-    Location currentPosition = odometry->getLocation();
-
-    double dX = currentPosition.x - targetPosition.x;
-    double dY = currentPosition.y - targetPosition.y;
-
-    return sqrt(dX * dX + dY * dY);
+    return false;
 }
 
 double Controller::getDistanceError() {
     switch (currentPoint->getType()) {
-        case POSITION:
+        case STATIC_POSITION:
             break;
         case MOVE_TO_POSITION:
             return movementController->getDistanceError();
             break;
-        case RECALAGE_X:
+        case SET_X:
             break;
-        case RECALAGE_Y:
+        case SET_Y:
             break;
-        case RECALAGE_XY:
+        case SET_XY_THETA:
             break;
         default:
             return 0;
@@ -170,19 +187,19 @@ double Controller::getDistanceError() {
 
 double Controller::getAngleError() {
     switch (currentPoint->getType()) {
-        case POSITION:
+        case STATIC_POSITION:
             break;
-        case ANGLE:
+        case ABSOLUTE_ANGLE:
             return angleController->getAngleError();
             break;
         case MOVE_TO_POSITION:
             return movementController->getAngleError();
             break;
-        case RECALAGE_X:
+        case SET_X:
             break;
-        case RECALAGE_Y:
+        case SET_Y:
             break;
-        case RECALAGE_XY:
+        case SET_XY_THETA:
             break;
         default:
             return 0;
