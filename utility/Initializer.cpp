@@ -17,22 +17,22 @@ Configuration * Initializer::start(bool log) {
     configuration = new Configuration(RESOURCES_PATH + "config.info");
     activateLidar = configuration->getInt("global.activate_lidar");
 
+    UI::init();
+    UI::logAndRefresh("Started initialization :");
+
     initWiringPi();
     initOdometry();
     if(activateLidar == 1) initLidar();
     initMotorManager();
     initController();
     initActionManager();
-    UI::init();
+    UI::initModules();
 
     return configuration;
 }
 
 int Initializer::initWiringPi() {
-    if(allowLogging) cout << "Initializing WiringPi ... ";
-
     // The two init functions cannot be called at the same time
-//    wiringPiSetupGpio();
     wiringPiSetup();
 
     // Arduino for the motors
@@ -45,7 +45,7 @@ int Initializer::initWiringPi() {
     if(motor_fd < 0 || servos_fd < 0)
         return EXIT_FAIL_I2C;
 
-    if(allowLogging) cout << "done" << endl;
+    UI::logAndRefresh(" -- Wiring Pi done");
     return EXIT_SUCCESS;
 }
 
@@ -53,9 +53,11 @@ void Initializer::initLidar() {
     Lidar::init();
 
     if(!Lidar::test()){
-        cout << "Error while testing the lidar" << endl;
+        UI::logAndRefresh("[LIDAR] Error while testing the lidar");
         exit(-1);
     }
+
+    UI::logAndRefresh(" -- Lidar done");
 
     // Starting the thread
     int matchTime = configuration->getInt("global.match_time");
@@ -63,25 +65,21 @@ void Initializer::initLidar() {
 }
 
 void Initializer::initMotorManager() {
-    if(allowLogging) cout << "Initializing the motor manager ... ";
 	motorManager = new MotorManager(motor_fd);
-    if(allowLogging) cout << "done" << endl;
+    UI::logAndRefresh(" -- Motor Manager done");
 }
 
 void Initializer::initOdometry() {
-    if(allowLogging) cout << "Initializing the odometry ... ";
     odometry = new Odometry(configuration);
-    if(allowLogging) cout << "done" << endl;
+    UI::logAndRefresh(" -- Odometry done");
 }
 
 void Initializer::initController() {
-    if(allowLogging) cout << "Initializing the controller ... ";
     controller = new Controller(motorManager, odometry, configuration);
-    if(allowLogging) cout << "done" << endl;
+    UI::logAndRefresh(" -- Controller done");
 }
 
 void Initializer::initActionManager() {
-    if(allowLogging) cout << "Initializing the action manager ... ";
     int nbAx12 = configuration->getInt("global.nb_AX12");
 
     actionManager = new ActionManager(servos_fd, nbAx12, RESOURCES_PATH + "actions/");
@@ -89,13 +87,11 @@ void Initializer::initActionManager() {
     // Initialize the motors in the startup location
     if(nbAx12 > 0) actionManager->action("initialize.as");
 
-    if(allowLogging) cout << "done" << endl;
+    UI::logAndRefresh(" -- Action Manager done");
 }
 
 void Initializer::end() {
-    endwin();
-
-    if(allowLogging) cout << "Quitting the application ... ";
+    UI::logAndRefresh("\nEnd of the program");
     if(controller != nullptr) controller->stopMotors();
 
     // Resetting the AX12, very important if you want to start them afterward
@@ -109,8 +105,8 @@ void Initializer::end() {
         Lidar::stop();
         lidarThread->join();
     }
-
-    if(allowLogging) cout << "done" << endl;
+    UI::update();
+    UI::end();
 }
 
 
