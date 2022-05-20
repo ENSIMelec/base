@@ -110,6 +110,7 @@ void AX12Manager::close() {
 
 int AX12Manager::AX12Action(int numActionneur, int angleAction, int forceAction) {
 	timer temps;
+	Clock temps;
 
 //	std::cout << "Numéro ax12Manager ID : " << numActionneur << std::endl;
 	int dxl_id = numActionneur;
