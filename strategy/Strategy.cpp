@@ -15,15 +15,13 @@ Strategy::Strategy(const string& path, const string& n) {
     if(StrategyParser::getStatus() == EXIT_SUCCESS) {
 //        cout << "Successfully loaded the strategy with " << objectives->size() << " objectives !" << endl;
     } else {
-        cout << "Unable to load the strategy ..." << endl;
+        printf("Unable to load the strategy ...\n");
         return;
     }
 
     // Get the current objective
     if(!objectives->empty()) {
         currentObjective = objectives->at(0);
-    } else {
-        strategyIsDone = true;
     }
 }
 
@@ -35,15 +33,15 @@ void Strategy::logObjectives() {
     }
 }
 
+/** Function that returns the next point of the strategy or a nullptr if the strategy has ended */
 Point * Strategy::getNextPoint() {
     Point * point = currentObjective->getNextPoint();
 
-    if(currentObjective->isDone()) {
+    if(point == nullptr) {
         currentObjectiveIndex++;
 
         // Check if we are at the end of the objective list
         if(currentObjectiveIndex >= objectives->size()) {
-            strategyIsDone = true;
             return nullptr;
         } else {
             // Go to the next objective
@@ -56,7 +54,6 @@ Point * Strategy::getNextPoint() {
 
     return point;
 }
-
 Point * Strategy::getCurrentPoint() {
     return currentObjective->getCurrentPoint();
 }

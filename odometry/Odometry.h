@@ -53,7 +53,7 @@ public:
 
 
     
-    bool isStuck(int motorRSpeed, int motorLSpeed);
+    bool isStuck(int motorLSpeed, int motorRSpeed);
     void unStuck(int graceTime = UNSTUCK_GRACE_TIME);
 
     

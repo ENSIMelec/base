@@ -10,6 +10,7 @@
 #include "../controller/Controller.h"
 #include "Point.h"
 #include "Objective.h"
+#include "../ui/UI.h"
 
 using namespace std;
 
@@ -19,11 +20,14 @@ public:
     void logObjectives();
 
     // ---------- Getters ----------
-    [[nodiscard]] bool isDone() const {return strategyIsDone;}
     [[nodiscard]] Point * getNextPoint();
     [[nodiscard]] Point *getCurrentPoint();
     [[nodiscard]] Objective * getCurrentObjective() {return currentObjective;}
     [[nodiscard]] const char * getName() const {return name;}
+    [[nodiscard]] bool isActive() const {return active;}
+
+    // ---------- Setters -----------
+    void setActive(bool a) {active = a;}
 
 private:
     const char * name;
@@ -31,8 +35,7 @@ private:
 
     Objective * currentObjective;
     vector<Objective *> * objectives;
-
-    bool strategyIsDone = false;
+    bool active = true;
 };
 
 

@@ -55,10 +55,10 @@ void UI::initModules() {
     // Left column
     components.push_back(new OdometryWindow(0, 1, width / 3, 5));
     components.push_back(new SerialCoderManagerWindow(0, 6, width / 3, 3));
-    components.push_back(new StrategyWindow(0, 9, width / 3, 6));
+//    components.push_back(new StrategyWindow(0, 9, width / 3, 6));
 
     // Middle column
-    components.push_back(new ControllerWindow(width/3, 1, width / 3, 9));
+//    components.push_back(new ControllerWindow(width/3, 1, width / 3, 9));
 
 //    components.push_back(new ActionManagerWindow(2 * width / 3, 5, width / 3, 5));
 //    components.push_back(new InformationWindow(width / 3, 10, 2 * width / 3, 5));
@@ -74,6 +74,10 @@ void UI::logAndRefresh(const char *s) {
     logger->display();
     wrefresh(win);
     refresh();
+}
+
+void UI::log(const char *s) {
+    logger->println(new string(s));
 }
 
 void UI::display() {
@@ -102,6 +106,10 @@ void UI::end() {
     attron(COLOR_PAIR(1));
     printw(" press q to exit ...");
     attroff(COLOR_PAIR(1));
+
+    timeout(10000);
+
+    delay(2000);
 
     refresh();
     while(UI::shouldQuit) {

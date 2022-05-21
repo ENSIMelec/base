@@ -24,15 +24,12 @@ public:
 
     [[nodiscard]] Point *getNextPoint();
     [[nodiscard]] int getPointIndex() const {return currentPointIndex;}
-    [[nodiscard]] bool isDone() const {return done;}
     [[nodiscard]] const char * getName() const {return name;}
     [[nodiscard]] Point * getCurrentPoint() {return currentPoint;}
     [[nodiscard]] int getNbPoints() const {return (int) points.size();}
 private:
     const char * name = nullptr;
     bool optional = false;
-
-    bool done = false;
 
     int currentPointIndex = 0;
     Point * currentPoint{};

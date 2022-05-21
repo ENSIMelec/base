@@ -41,11 +41,9 @@ void Objective::logInfos() {
 }
 
 Point *Objective::getNextPoint() {
-
     currentPointIndex++;
     if(currentPointIndex >= points.size()) {
         // There is no more points
-        done = true;
         return nullptr;
     } else {
         // Return the next point in the objective

@@ -28,6 +28,8 @@ public:
 
     static void initModules();
     static void logAndRefresh(const char *s);
+    static void log(const char *s);
+
 private:
     static inline int width, height;
 

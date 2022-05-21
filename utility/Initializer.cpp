@@ -26,7 +26,6 @@ Configuration * Initializer::start(bool log) {
     initMotorManager();
     initController();
     initActionManager();
-    UI::initModules();
 
     return configuration;
 }
@@ -91,7 +90,7 @@ void Initializer::initActionManager() {
 }
 
 void Initializer::end() {
-    UI::logAndRefresh("\nEnd of the program");
+    UI::logAndRefresh("End of the program");
     if(controller != nullptr) controller->stopMotors();
 
     // Resetting the AX12, very important if you want to start them afterward
