@@ -122,7 +122,9 @@ int StrategyParser::parseObjectivePoints(const string& path, const string& objFi
                             point->setType(PointType::SET_X);
                         } else if(value == "SetY") {
                             point->setType(PointType::SET_Y);
-                        } else if(value == "SetXYTheta") {
+                        } else if (value == "SetTheta") {
+                            point->setType(PointType::SET_THETA);
+                        }else if(value == "SetXYTheta") {
                             point->setType(PointType::SET_XY_THETA);
                         } else if(value == "Wait") {
                             point->setType(PointType::WAIT);

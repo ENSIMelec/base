@@ -58,7 +58,7 @@ void UI::initModules() {
 //    components.push_back(new StrategyWindow(0, 9, width / 3, 6));
 
     // Middle column
-//    components.push_back(new ControllerWindow(width/3, 1, width / 3, 9));
+    components.push_back(new ControllerWindow(width/3, 1, width / 3, 9));
 
 //    components.push_back(new ActionManagerWindow(2 * width / 3, 5, width / 3, 5));
 //    components.push_back(new InformationWindow(width / 3, 10, 2 * width / 3, 5));

@@ -16,7 +16,8 @@ enum PointType {
     MOVE_TO_POSITION_RELATIVE_TO_ANGLE,
     WAIT,
     ACTION,
-    ANGLE
+    ANGLE,
+    SET_THETA
 };
 
 #endif //KRABBS_POINT_TYPE_H

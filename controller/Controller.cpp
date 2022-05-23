@@ -145,6 +145,9 @@ void Controller::setNextPoint(Point * point) {
         case WAIT:
             delay((unsigned int) point->getWaitingTime());
             break;
+        case SET_THETA:
+            odometry->setTheta(point->getTheta());
+            break;
     }
 }
 
@@ -157,6 +160,10 @@ bool Controller::isTargetReached() {
             return angleController->isTargetReached();
         case WAIT:
         case ACTION:
+        case SET_X:
+        case SET_Y:
+        case SET_THETA:
+        case SET_XY_THETA:
             return true;
         default:
             return false;

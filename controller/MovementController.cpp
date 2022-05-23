@@ -78,6 +78,8 @@ void MovementController::setTargetPosition(double x, double y) {
     pid_angle->reset();
     pid_distance->reset();
 
+    direction = FORWARD;
+
     timer.restart();
 }
 
