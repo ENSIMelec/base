@@ -14,7 +14,8 @@
 #include <thread>
 
 using namespace std;
-const string RESOURCES_PATH = "/home/pi/Documents/Kiroulpa/res/";
+const string RESOURCES_PATH = "/home/pi/Documents/UDP/src/base/";
+//const string RESOURCES_PATH = "/home/pi/Documents/Kiroulpa/res/";
 
 class Initializer {
 public:
