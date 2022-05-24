@@ -105,8 +105,11 @@ int StrategyParser::parseObjectivePoints(const string& path, const string& objFi
                         point->setWaitingTime(value);
                     }else if(key == "attAction") {
                         point->setActionAfterMovement(true);
-                    } else if(key == "distance_threshold") {
-                        point->setDistanceThreshold(value);
+                    } else if (key == "activate_lidar") {
+                        if(value == 0) point->setDeactivateLidar(true);
+                        if(value == 1) point->setDeactivateLidar(false);
+                    }else if(key == "distance_threshold") {
+                            point->setDistanceThreshold(value);
                     } else if(key == "type") {
                         if(value == "StaticPosition") {
                             point->setType(PointType::STATIC_POSITION);

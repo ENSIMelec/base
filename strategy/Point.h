@@ -70,6 +70,9 @@ public:
     void setWaitingTime(double t) { waitingTime = t;}
     double getWaitingTime() const {return waitingTime;}
 
+    void setDeactivateLidar(bool d) {deactivateLidar = d;}
+    double getDactivateLidar() const {return deactivateLidar;}
+
     void logTargetInformation();
 
     void setMaxSpeed(double s) {maxSpeed = s;}
@@ -94,6 +97,7 @@ private:
     string m_blocked;
     string m_commentary;
     PointType m_type;
+    bool deactivateLidar = false;
 
     MovementController::Direction direction = MovementController::FORWARD;
 

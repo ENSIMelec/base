@@ -37,6 +37,8 @@ public:
 
     static void startLidar();
 
+    static void setLidarActivated(bool activated);
+
 private:
     inline static MotorManager *motorManager = nullptr;
     inline static Odometry *odometry = nullptr;

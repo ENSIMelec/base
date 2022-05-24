@@ -110,4 +110,8 @@ void Initializer::end() {
     UI::end();
 }
 
+void Initializer::setLidarActivated(bool activated) {
+    activateLidar = activated;
+}
+
 
