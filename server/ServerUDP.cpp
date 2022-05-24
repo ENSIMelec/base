@@ -1,6 +1,17 @@
 //
 // Created by cleme on 22/05/2022.
 //
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/types.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <arpa/inet.h>
+#include <fstream>
+#include <string>
+#include <cstring>
+#include <signal.h>
 
 #include<stdio.h>
 #include<string.h>	//strlen
@@ -10,74 +21,125 @@
 #include<unistd.h>	//write
 #include<thread>
 #include <iostream>
+#include <a.out.h>
 
 #include "ServerUDP.h"
+
+#define PORT 4445
+
+pthread_t thread_tcp [100], thread_file [10];
+int threadno_tcp = 0;
+int mistfd; // server file descriptor
+
+/* message type that will be sent by the client through TCP connection */
+struct msg {
+    char filename [100];
+    char file [2048];
+};
+
+/* Structure to hold the necessary parameters to pass into the threaded function */
+struct req {
+    int des;
+    socklen_t addlen;
+    sockaddr_in clientaddr;
+};
+
+void* tcp_connection (void*);
+
+/* Signal handlre for ctrl+c to terminate the infinite server properly by closing the socket */
+void sig_handler(int signo) {
+
+    /* signal handler */
+    if (signo == SIGINT) {
+        std::cout << "\t Exiting..." << '\n';
+        close (mistfd);
+        exit (1);
+    }
+}
 
 #define PORT 4445
 void *connection_handler(void *);
 
 
 ServerUDP::ServerUDP(const std::string &addr, int port) {
-    int server_fd, new_socket;
-    struct sockaddr_in address;
-    int opt = 1;
-    int addrlen = sizeof(address);
-    char buffer[1024] = {0};
-    char *hello = "Hello from server";
+    /* server name : Mistcp */
+    sockaddr_in mistaddr; // server address
+    sockaddr_in clientaddr; // client address
 
-    // Creating socket file descriptor
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-    {
-        perror("socket failed");
-        exit(EXIT_FAILURE);
-    }else
-        perror("socket created");
+    socklen_t addrlen = sizeof(clientaddr);
 
-    // Forcefully attaching socket to the port 8080
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
-                   &opt, sizeof(opt)))
-    {
-        perror("setsockopt");
-        exit(EXIT_FAILURE);
-    }else
-        perror("sock attached");
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons( PORT );
+    /* Create socket */
+    if ((mistfd = socket (AF_INET, SOCK_STREAM, 0)) == -1) {
+        std::cout << "\n\t Socket creation failed...\n\t Exiting..." << '\n';
+        return;
+    }
 
-    // Forcefully attaching socket to the port 8080
-    if (bind(server_fd, (struct sockaddr *)&address,
-             sizeof(address))<0)
-    {
-        perror("bind failed");
-        exit(EXIT_FAILURE);
-    }else
-        perror("bind success");
-    if (listen(server_fd, 3) < 0)
-    {
-        perror("listen");
-        exit(EXIT_FAILURE);
-    }else
-        perror("listen success");
+    std::cout << "\n\t Socket created..." << '\n';
 
-    while(new_socket = accept(server_fd, (struct sockaddr *)&address,
-                             (socklen_t*)&addrlen))
-    {
-        perror("accept");
-        //cout << "putain wesh" << endl;
+    memset ((sockaddr*)&mistaddr, 0, sizeof (mistaddr));
+    mistaddr.sin_family = AF_INET;   // IPv4 address family
+    mistaddr.sin_addr.s_addr = htonl (INADDR_ANY);  // Give the local machine address
+    mistaddr.sin_port = htons (PORT); // Port at which server listens to the requests
 
-        if(read( new_socket , buffer, 1024-1) < 0 ){
-            perror("no message found");
-        }else{
-            cout << "message reçu " << endl;
-            printf("%s\n",buffer);
+    /* Bind the IP address and the port number to craete the socket */
+    if (bind (mistfd, (sockaddr*)&mistaddr, sizeof (mistaddr)) != 0) {
+        std::cout << "\n\t Binding failed...\n\t Exiting..." << '\n';
+        return;
+    }
 
-            send(new_socket , hello , strlen(hello) , 0 );
-            printf("Hello message sent\n");
-        }
+    std::cout << "\n\t Binding succesful..." << '\n';
+
+    if ((listen (mistfd, 5)) != 0) {
+        std::cout << "\n\t Server not listning..." << '\n';
+        return;
+    }
+
+    /* Signal catching */
+    signal(SIGINT, sig_handler);
+    signal(SIGTSTP, sig_handler);
+
+    std::cout << "\n\t Server listning..." << '\n';
+
+    /*
+     * Infinite Server listning loop
+     * which creates a seperate thread for each connection established
+     */
+    //system("echo $DISPLAY");
+    system("/usr/bin/java -Dfile.encoding=UTF-8 -classpath /home/pi/Interface_JAVA/SnAzu2FIYQ app.Main");
+    while (1) {
+
+        int connfd;
+        if ((connfd = accept(mistfd,(sockaddr*)&clientaddr, &addrlen)) < 0)
+            std::cout << "\n\t Client connection declined..." << '\n';
+        else
+            std::cout << "\n\t Client connection accepted..." << '\n';
+
+        /* Filling the parameter values of the threaded function */
+        req *r = new req;  // allocate memory
+        bzero (r, sizeof (req));  // Clear memory
+        r->addlen = addrlen;
+        r->clientaddr = clientaddr;
+        r->des = connfd;
+
+        pthread_create (&thread_tcp [threadno_tcp++], NULL, tcp_connection, (void*)r);
+        if (threadno_tcp == 100)
+            threadno_tcp = 0;
 
     }
-    return;
+
+}
+
+void* tcp_connection (void*  arg) {
+    req sock = *((req*)arg);
+    msg buffer;
+
+    while (1) {
+        /* Read the packet sent by the established client */
+        read (sock.des, &buffer, sizeof(buffer));
+
+        std::cout << "\n\t File name: " << buffer.filename;
+        std::cout << "\n\n" << buffer.file << '\n';
+    }
 }
 
 void ServerUDP::PrintCmd(char* string){
