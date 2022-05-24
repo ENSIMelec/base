@@ -51,13 +51,15 @@ int Initializer::initWiringPi() {
 void Initializer::initLidar() {
     Lidar::init();
 
-    if(!Lidar::test()){
-        UI::logAndRefresh("[LIDAR] Error while testing the lidar");
-        exit(-1);
-    }
+//    if(!Lidar::test()){
+//        UI::logAndRefresh("[LIDAR] Error while testing the lidar");
+//        exit(-1);
+//    }
 
     UI::logAndRefresh(" -- Lidar done");
+}
 
+void Initializer::startLidar() {
     // Starting the thread
     int matchTime = configuration->getInt("global.match_time");
     lidarThread = new thread(Lidar::run, matchTime, 800);

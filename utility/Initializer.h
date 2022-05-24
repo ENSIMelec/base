@@ -34,6 +34,9 @@ public:
 
     // ----- Setters -----
     static void setStrategy(Strategy * s) {strategy = s;}
+
+    static void startLidar();
+
 private:
     inline static MotorManager *motorManager = nullptr;
     inline static Odometry *odometry = nullptr;
@@ -57,7 +60,6 @@ private:
 protected:
     inline static bool allowLogging;
     inline static Configuration *configuration = nullptr;
-
 };
 
 #endif //KRABBS_INITIALIZE_H

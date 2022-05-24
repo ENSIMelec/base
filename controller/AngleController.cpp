@@ -33,7 +33,8 @@ void AngleController::calculateCommands(double theta) {
     angleError = targetAngle - theta;
     angleCommand = pid->compute(angleError);
 
-    if(abs(angleCommand) < 10) angleCommand = 10;
+    int sign = (angleCommand < 0) ? -1 : 1;
+    if(abs(angleCommand) < 10) angleCommand = sign * 10;
     angleCommand *= accelerationFactor;
 }
 
