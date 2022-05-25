@@ -1,5 +1,6 @@
 #include "AX12Manager.h"
 #include "../utility/Clock.h"
+#include "../ui/UI.h"
 
 AX12Manager::AX12Manager(int nbAX) : nbAX12(nbAX) {
 	initialisation();
@@ -35,7 +36,7 @@ int AX12Manager::initialisation() {
 	}
 	else
 	{
-		printf("Failed to open the port!\n");
+		UI::logAndRefresh("[Dynamixel] Failed to open the serial port!");
 		return 1;
 	}
 	//First, controller opens the port to do serial communication with the Dynamixel. If it fails to open the port, the example will be terminated.
@@ -47,7 +48,7 @@ int AX12Manager::initialisation() {
 	}
 	else
 	{
-		printf("Failed to change the baudrate!\n");
+		UI::logAndRefresh("[Dynamixel] Failed to change the baudrate!");
 		return 1;
 	}
 	//Secondly, the controller sets the communication BAUDRATE at the port opened previously.
@@ -58,12 +59,14 @@ int AX12Manager::initialisation() {
 		if (dxl_comm_result != COMM_SUCCESS)
 		{
 			//packetHandler->printTxRxResult(dxl_comm_result);
-			std::cout << "Erreur COMM init Dyna " << index_ID << std::endl;
+			string s = "[Dynamixel] Error while enabling torque on AX12::" + to_string(index_ID);
+            UI::logAndRefresh(s.c_str());
 		}
 		else if (dxl_error != 0)
         {
 			//packetHandler->printRxPacketError(dxl_error);
-			std::cout << "Erreur init Dyna " << index_ID << std::endl;
+            string s = "[Dynamixel] Error : incorrect packet on AX12::" + to_string(index_ID);
+            UI::logAndRefresh(s.c_str());
 		}
 		else
 		{
@@ -89,12 +92,13 @@ void AX12Manager::close() {
 		if (dxl_comm_result != COMM_SUCCESS)
 		{
 			//packetHandler->printTxRxResult(dxl_comm_result);
-			std::cout << "Erreur COMM close " << index_ID << std::endl;
+            string s = "[Dynamixel] Error while disabling torque on AX12::" + to_string(index_ID);
+            UI::logAndRefresh(s.c_str());
 		}
 		else if (dxl_error != 0)
 		{
-			//packetHandler->printRxPacketError(dxl_error);
-			std::cout << "Erreur close " << index_ID << std::endl;
+            string s = "[Dynamixel] Error : incorrect packet on AX12::" + to_string(index_ID);
+            UI::logAndRefresh(s.c_str());
 		}
 		/*
 		The controller frees the Dynamixel to be idle.
@@ -138,12 +142,13 @@ int AX12Manager::AX12Action(int numActionneur, int angleAction, int forceAction)
 	if (dxl_comm_result != COMM_SUCCESS)
 	{
 		//packetHandler->printTxRxResult(dxl_comm_result);
-		std::cout << "Erreur COMM limitation couple " << numActionneur << std::endl;
+        string s = "[Dynamixel] Error while setting torque limit on AX12::" + to_string(numActionneur);
+        UI::logAndRefresh(s.c_str());
 	}
 	else if (dxl_error != 0)
 	{
-		//packetHandler->printRxPacketError(dxl_error);
-		std::cout << "Erreur limitation couple " << numActionneur << std::endl;
+        string s = "[Dynamixel] Error : incorrect packet on AX12::" + to_string(numActionneur);
+        UI::logAndRefresh(s.c_str());
 	}
 
 	temps.restart();
@@ -151,13 +156,13 @@ int AX12Manager::AX12Action(int numActionneur, int angleAction, int forceAction)
 	dxl_comm_result = packetHandler->write2ByteTxRx(portHandler, numActionneur, ADDR_AX_GOAL_POSITION, dxl_goal_position, &dxl_error);
     if (dxl_comm_result != COMM_SUCCESS)
     {
-      	//packetHandler->printTxRxResult(dxl_comm_result);
-		std::cout << "Erreur COMM ecriture angle " << numActionneur << std::endl;
+        string s = "[Dynamixel] Error while setting goal position on AX12::" + to_string(numActionneur);
+        UI::logAndRefresh(s.c_str());
     }
     else if (dxl_error != 0)
     {
-     	//packetHandler->printRxPacketError(dxl_error);
-		std::cout << "Erreur ecriture angle " << numActionneur << std::endl;
+        string s = "[Dynamixel] Error : incorrect packet on AX12::" + to_string(numActionneur);
+        UI::logAndRefresh(s.c_str());
     }
     /* //Pas si utile que ça ... Il faudrait plutot faire une boucle "tant qu'on a pas une charge correspondant à la prise de cube dans les pinces ..."
     do {
