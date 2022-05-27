@@ -12,6 +12,7 @@
 #include "../odometry/Odometry.h"
 #include "Configuration.h"
 #include "../strategy/Strategy.h"
+#include "../../ResistanceReader.h"
 #include <thread>
 
 using namespace std;
@@ -36,9 +37,10 @@ public:
     static void setStrategy(Strategy * s) {strategy = s;}
 
     static void startLidar();
-
     static void setLidarActivated(bool activated);
 
+    static int getColor();
+    static void setColor(int color);
 private:
     inline static MotorManager *motorManager = nullptr;
     inline static Odometry *odometry = nullptr;
@@ -62,6 +64,7 @@ private:
 protected:
     inline static bool allowLogging;
     inline static Configuration *configuration = nullptr;
+    inline static int color = YELLOW;
 };
 
 #endif //KRABBS_INITIALIZE_H

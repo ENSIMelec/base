@@ -8,6 +8,7 @@
 #include "../Lidar.h"
 #include "../../ResistanceReader.h"
 #include "../ui/UI.h"
+#include "Utils.h"
 
 #define EXIT_FAIL_I2C 1
 
@@ -20,9 +21,16 @@ Configuration * Initializer::start(bool log) {
     UI::init();
     UI::logAndRefresh("Started initialization :");
 
+
+//    if(Utils::isARUPressed()) {
+//        UI::logAndRefresh("ARU is pressed ! Remove it before the match can start.");
+//    }
+//
+//    while(Utils::isARUPressed()) {}
+
     initWiringPi();
-    initOdometry();
     if(activateLidar == 1) initLidar();
+    initOdometry();
     initMotorManager();
     initController();
     initActionManager();
@@ -112,6 +120,14 @@ void Initializer::end() {
 
 void Initializer::setLidarActivated(bool activated) {
     activateLidar = activated;
+}
+
+int Initializer::getColor() {
+    return color;
+}
+
+void Initializer::setColor(int c) {
+    color = c;
 }
 
 

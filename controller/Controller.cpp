@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include "../ui/UI.h"
+#include "../Lidar.h"
 
 #define DEBUG_CONTROLLER
 //#define CSV_PRINT
@@ -54,6 +55,10 @@ void Controller::update() {
 
     // Set the orders
     if(activateMotors != 0) {
+//        if(Lidar::isWarning()) {
+//            if(pwm.left > 50) pwm.left = (int) ((double) pwm.left / 1.6);
+//            if(pwm.right > 50) pwm.right = (int) ((double) pwm.right / 1.6);
+//        }
         motorManager->setOrder(pwm.left, pwm.right);
     }
     else {

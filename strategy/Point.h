@@ -70,13 +70,18 @@ public:
     void setWaitingTime(double t) { waitingTime = t;}
     double getWaitingTime() const {return waitingTime;}
 
-    void setDeactivateLidar(bool d) {deactivateLidar = d;}
-    double getDactivateLidar() const {return deactivateLidar;}
+    void setLidarShouldBeActivated(bool d) { lidarShouldBeActivated = d;}
+    bool getLidarShouldBeActivated() const {return lidarShouldBeActivated;}
 
     void logTargetInformation();
 
     void setMaxSpeed(double s) {maxSpeed = s;}
     double getMaxSpeed() const {return maxSpeed;}
+
+
+    bool getChangeLidarState() {return changeLidarState; }
+    void setChangeLidarState(bool state) { changeLidarState = state;}
+
 private:
     /** Distance command max speed. -1 means default */
     double maxSpeed = -1;
@@ -97,7 +102,8 @@ private:
     string m_blocked;
     string m_commentary;
     PointType m_type;
-    bool deactivateLidar = false;
+    bool lidarShouldBeActivated = true;
+    bool changeLidarState = false;
 
     MovementController::Direction direction = MovementController::FORWARD;
 

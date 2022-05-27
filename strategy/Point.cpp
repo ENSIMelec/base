@@ -21,3 +21,4 @@ void Point::logTargetInformation() {
     cout << "Type : " << m_type << endl;
     cout << "Action : " << action << "\n" << endl;
 }
+

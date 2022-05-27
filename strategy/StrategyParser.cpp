@@ -4,6 +4,7 @@
 
 #include "StrategyParser.h"
 #include "../lib/json.hpp"
+#include "../ui/UI.h"
 
 using json = nlohmann::json;
 
@@ -103,12 +104,16 @@ int StrategyParser::parseObjectivePoints(const string& path, const string& objFi
                         point->setAction(value);
                     } else if(key == "time") {
                         point->setWaitingTime(value);
-                    }else if(key == "attAction") {
+                    } else if(key == "attAction") {
                         point->setActionAfterMovement(true);
                     } else if (key == "activate_lidar") {
-                        if(value == 0) point->setDeactivateLidar(true);
-                        if(value == 1) point->setDeactivateLidar(false);
-                    }else if(key == "distance_threshold") {
+                        point->setChangeLidarState(true);
+                        if(value == 0) {
+                            point->setLidarShouldBeActivated(false);
+                        } else {
+                            point->setLidarShouldBeActivated(true);
+                        }
+                    } else if(key == "distance_threshold") {
                             point->setDistanceThreshold(value);
                     } else if(key == "type") {
                         if(value == "StaticPosition") {
